@@ -4,8 +4,42 @@ import { Save, RefreshCw, AlertCircle, Sparkles } from 'lucide-react';
 import { MoodLevel } from '../../types';
 import MoodSelector from '../MoodSelector';
 import PhotoUpload from '../PhotoUpload';
+import { JOURNAL } from '../../constants/uiStrings';
 import { moods } from '../../data/moods';
 
+/**
+ * JournalEntryForm - Form for creating new journal entries
+ * 
+ * @component
+ * @param {function} onSubmit - Function to handle form submission
+ * @param {boolean} isSubmitting - Whether the form is currently submitting
+ * @param {string} error - Error message if submission failed
+ * @param {string} dailyPrompt - Prompt to inspire the user's journal entry
+ * @param {boolean} isLoadingPrompt - Whether a new prompt is being loaded
+ * @param {function} onGenerateNewPrompt - Function to generate a new prompt
+ * @param {boolean} showMoodSuggestion - Whether to show AI mood suggestion
+ * @param {MoodLevel|null} aiDetectedMood - AI-detected mood level
+ * @param {function} onAcceptAiMood - Function to accept AI mood suggestion
+ * @param {function} onDismissMoodSuggestion - Function to dismiss AI mood suggestion
+ * @param {boolean} [isPremiumUser=true] - Whether user has premium access
+ * @param {function} [onUpsellTrigger] - Function to trigger premium upsell
+ * 
+ * @example
+ * return (
+ *   <JournalEntryForm
+ *     onSubmit={handleSubmit}
+ *     isSubmitting={isSubmitting}
+ *     error={error}
+ *     dailyPrompt={dailyPrompt}
+ *     isLoadingPrompt={isLoadingPrompt}
+ *     onGenerateNewPrompt={handleGenerateNewPrompt}
+ *     showMoodSuggestion={showMoodSuggestion}
+ *     aiDetectedMood={aiDetectedMood}
+ *     onAcceptAiMood={handleAcceptAiMood}
+ *     onDismissMoodSuggestion={handleDismissMoodSuggestion}
+ *   />
+ * )
+ */
 interface JournalEntryFormProps {
   onSubmit: (content: string, title: string | null, mood: MoodLevel, photo: File | null) => Promise<void>;
   isSubmitting: boolean;
@@ -162,6 +196,7 @@ const JournalEntryForm = React.memo(function JournalEntryForm({
           disabled={isSubmitting}
           isPremiumUser={isPremiumUser}
           onUpsellTrigger={onUpsellTrigger}
+          aria-label="Upload a photo to attach to your journal entry"
         />
       </div>
 

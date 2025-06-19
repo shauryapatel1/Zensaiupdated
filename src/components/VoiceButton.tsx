@@ -1,7 +1,35 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Volume2, VolumeX, Loader2 } from 'lucide-react';
+import { UPSELL } from '../constants/uiStrings';
 
+/**
+ * VoiceButton - Button for playing text as speech
+ * 
+ * @component
+ * @param {boolean} [isPremiumUser=true] - Whether user has premium access
+ * @param {function} [onUpsellTrigger] - Function to trigger premium upsell
+ * @param {boolean} isGenerating - Whether speech is being generated
+ * @param {boolean} isPlaying - Whether speech is currently playing
+ * @param {function} onPlay - Function to play speech
+ * @param {function} onStop - Function to stop speech
+ * @param {boolean} [disabled=false] - Whether the button is disabled
+ * @param {'sm'|'md'|'lg'} [size='md'] - Size of the button
+ * @param {string} [className] - Optional CSS class name
+ * 
+ * @example
+ * return (
+ *   <VoiceButton
+ *     isPremiumUser={isPremium}
+ *     onUpsellTrigger={handleShowUpsellModal}
+ *     isGenerating={isGeneratingSpeech}
+ *     isPlaying={isSpeechPlaying}
+ *     onPlay={handlePlaySpeech}
+ *     onStop={handleStopSpeech}
+ *     size="md"
+ *   />
+ * )
+ */
 interface VoiceButtonProps {
   isPremiumUser?: boolean;
   onUpsellTrigger?: () => void;

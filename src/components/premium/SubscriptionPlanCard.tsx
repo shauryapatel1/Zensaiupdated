@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Check, CreditCard } from 'lucide-react';
+import { PREMIUM } from '../../constants/uiStrings';
 
 interface PlanFeature {
   text: string;
@@ -76,17 +77,17 @@ const SubscriptionPlanCard = React.memo(function SubscriptionPlanCard({
           {isLoading ? (
             <>
               <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" aria-hidden="true" />
-              <span>Processing...</span>
+              <span>{PREMIUM.BUTTONS.PROCESSING}</span>
             </>
           ) : isSubscribed ? (
             <>
               <Check className="w-4 h-4" aria-hidden="true" />
-              <span>Current Plan</span>
+              <span>{PREMIUM.BUTTONS.CURRENT_PLAN}</span>
             </>
           ) : (
             <>
               <CreditCard className="w-4 h-4" aria-hidden="true" />
-              <span>Subscribe</span>
+              <span>{PREMIUM.BUTTONS.SUBSCRIBE}</span>
             </>
           )}
         </button>

@@ -181,6 +181,10 @@ export default function MoodHistoryScreen({ onBack }: MoodHistoryScreenProps) {
     return new Date(dateString).toDateString();
   }
 
+  function formatDate(dateString: string) {
+    return new Date(dateString).toLocaleDateString();
+  }
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-zen-mint-50 via-zen-cream-50 to-zen-lavender-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">

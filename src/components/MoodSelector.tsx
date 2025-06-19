@@ -2,7 +2,31 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { MoodLevel } from '../types';
 import { moods } from '../data/moods';
+import { JOURNAL } from '../constants/uiStrings';
 
+/**
+ * MoodSelector - Component for selecting mood from a range of options
+ * 
+ * @component
+ * @param {MoodLevel} [selectedMood] - Currently selected mood
+ * @param {function} onMoodSelect - Function to handle mood selection
+ * @param {'sm'|'md'|'lg'} [size='md'] - Size of the mood selector
+ * @param {'horizontal'|'grid'} [layout='horizontal'] - Layout of mood options
+ * @param {boolean} [showLabels=true] - Whether to show mood labels
+ * @param {boolean} [disabled=false] - Whether the selector is disabled
+ * @param {string} [className] - Optional CSS class name
+ * 
+ * @example
+ * return (
+ *   <MoodSelector
+ *     selectedMood={mood}
+ *     onMoodSelect={setMood}
+ *     size="md"
+ *     layout="horizontal"
+ *     showLabels={true}
+ *   />
+ * )
+ */
 interface MoodSelectorProps {
   selectedMood?: MoodLevel;
   onMoodSelect: (mood: MoodLevel) => void;

@@ -3,7 +3,12 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { usePremium } from './usePremium';
 import { MoodLevel } from '../types';
+import { ErrorCode, createAppError, getUserFriendlyErrorMessage } from '../types/errors';
 
+/**
+ * Interface for mood analysis response
+ * @interface MoodAnalysisResponse
+ */
 interface MoodAnalysisResponse {
   success: boolean;
   mood: string;
@@ -13,6 +18,21 @@ interface MoodAnalysisResponse {
   timestamp: string;
 }
 
+/**
+ * Custom hook for analyzing mood from journal text
+ * 
+ * @returns {Object} Mood analysis methods and state
+ * 
+ * @example
+ * const { 
+ *   analyzeMood, 
+ *   isAnalyzing, 
+ *   error 
+ * } = useMoodAnalyzer();
+ * 
+ * // Analyze mood from text
+ * const detectedMood = await analyzeMood("I'm feeling great today!");
+ */
 export function useMoodAnalyzer() {
   const { user } = useAuth();
   const { isPremium, trackFeatureUsage } = usePremium();
@@ -20,9 +40,19 @@ export function useMoodAnalyzer() {
   const [error, setError] = useState<string | null>(null);
   const [dailyUsageCount, setDailyUsageCount] = useState(0);
 
+  /**
+   * Analyze mood from journal text
+   * 
+   * @param {string} journalEntry - Text to analyze
+   * @returns {Promise<MoodLevel|null>} Detected mood level or null on failure
+   */
   const analyzeMood = async (journalEntry: string): Promise<MoodLevel | null> => {
     if (!journalEntry.trim()) {
-      setError('Journal entry is required for mood analysis');
+      const error = createAppError(
+        ErrorCode.VALIDATION_ERROR,
+        'Journal entry is required for mood analysis'
+      );
+      setError(getUserFriendlyErrorMessage(error));
       return null;
     }
 
@@ -31,7 +61,12 @@ export function useMoodAnalyzer() {
 
     // Check if free user has reached daily limit
     if (!isPremium && !trackFeatureUsage('mood-analyzer')) {
-      setError('Daily limit reached. Upgrade to Premium for unlimited mood analysis.');
+      const error = createAppError(
+        ErrorCode.PREMIUM_DAILY_LIMIT,
+        'Daily limit reached. Upgrade to Premium for unlimited mood analysis.',
+        { feature: 'mood-analyzer' }
+      );
+      setError(getUserFriendlyErrorMessage(error));
       setIsAnalyzing(false);
       return null;
     }
@@ -45,7 +80,12 @@ export function useMoodAnalyzer() {
       });
 
       if (functionError) {
-        console.error('Edge function error:', functionError);
+        console.error('Mood analysis edge function error:', functionError);
+        const error = createAppError(
+          ErrorCode.AI_SERVICE_UNAVAILABLE,
+          'Failed to analyze mood',
+          { functionError }
+        );
         setError('Failed to analyze mood');
         return null;
       }
@@ -53,7 +93,12 @@ export function useMoodAnalyzer() {
       const response: MoodAnalysisResponse = data;
       
       if (!response.success) {
-        setError(response.error || 'Failed to analyze mood');
+        const error = createAppError(
+          ErrorCode.AI_GENERATION_FAILED,
+          response.error || 'Failed to analyze mood',
+          { response }
+        );
+        setError(getUserFriendlyErrorMessage(error));
         // Return neutral as fallback
         return 3;
       }
@@ -63,7 +108,12 @@ export function useMoodAnalyzer() {
       return moodLevel;
     } catch (err) {
       console.error('Error calling mood analyzer:', err);
-      setError('An unexpected error occurred during mood analysis');
+      const error = createAppError(
+        ErrorCode.UNKNOWN_ERROR,
+        'An unexpected error occurred during mood analysis',
+        undefined, err
+      );
+      setError(getUserFriendlyErrorMessage(error));
       return null;
     } finally {
       setIsAnalyzing(false);
@@ -78,7 +128,12 @@ export function useMoodAnalyzer() {
   };
 }
 
-// Helper function to convert mood string to MoodLevel
+/**
+ * Helper function to convert mood string to MoodLevel
+ * 
+ * @param {string} mood - Mood string from API
+ * @returns {MoodLevel} Numeric mood level (1-5)
+ */
 function convertMoodStringToLevel(mood: string): MoodLevel {
   const normalizedMood = mood.toLowerCase().trim();
   

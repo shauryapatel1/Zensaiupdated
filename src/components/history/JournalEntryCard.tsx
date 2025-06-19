@@ -4,7 +4,12 @@ import { Clock, Edit3, Trash2, Eye, ChevronUp, ChevronDown, X, Save } from 'luci
 import { MoodLevel } from '../../types';
 import { moods } from '../../data/moods';
 import MoodSelector from '../MoodSelector';
+import { JOURNAL } from '../../constants/uiStrings';
 
+/**
+ * Interface for journal entry data
+ * @interface JournalEntry
+ */
 interface JournalEntry {
   id: string;
   content: string;
@@ -15,6 +20,37 @@ interface JournalEntry {
   updated_at: string;
 }
 
+/**
+ * JournalEntryCard - Displays a single journal entry with view/edit functionality
+ * 
+ * @component
+ * @param {JournalEntry} entry - Journal entry data
+ * @param {boolean} isExpanded - Whether the entry is expanded to show full content
+ * @param {boolean} isEditing - Whether the entry is in edit mode
+ * @param {function} onToggleExpand - Function to toggle expanded state
+ * @param {function} onEdit - Function to enter edit mode
+ * @param {function} onDelete - Function to delete the entry
+ * @param {function} onSaveEdit - Function to save edits
+ * @param {function} onCancelEdit - Function to cancel editing
+ * @param {number} index - Index of the entry in the list
+ * @param {number} delay - Animation delay
+ * 
+ * @example
+ * return (
+ *   <JournalEntryCard
+ *     entry={entry}
+ *     isExpanded={expandedEntry === entry.id}
+ *     isEditing={editingEntry?.id === entry.id}
+ *     onToggleExpand={toggleEntryExpansion}
+ *     onEdit={handleEditEntry}
+ *     onDelete={handleDeleteEntry}
+ *     onSaveEdit={handleSaveEdit}
+ *     onCancelEdit={() => setEditingEntry(null)}
+ *     index={index}
+ *     delay={0.1}
+ *   />
+ * )
+ */
 interface JournalEntryCardProps {
   entry: JournalEntry;
   isExpanded: boolean;
@@ -209,7 +245,7 @@ const JournalEntryCard = React.memo(function JournalEntryCard({
             <div className="mt-4">
               <img
                 src={entry.photo_url}
-                alt="Journal entry"
+                alt={entry.photo_filename ? `Photo for journal entry: ${entry.photo_filename}` : `Photo attached to journal entry from ${formatTime(entry.created_at)}`}
                 className="rounded-xl max-w-full h-auto shadow-md"
               />
             </div>

@@ -1,7 +1,31 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Camera, X, Upload, Image as ImageIcon } from 'lucide-react';
+import { UPSELL } from '../constants/uiStrings';
+import { ErrorCode, createAppError, getUserFriendlyErrorMessage } from '../types/errors';
 
+/**
+ * PhotoUpload - Component for uploading and managing photos
+ * 
+ * @component
+ * @param {boolean} [isPremiumUser=true] - Whether user has premium access
+ * @param {function} [onUpsellTrigger] - Function to trigger premium upsell
+ * @param {function} onPhotoSelect - Function to handle photo selection
+ * @param {string|null} [currentPhoto] - URL of current photo
+ * @param {boolean} [disabled=false] - Whether the component is disabled
+ * @param {string} [className] - Optional CSS class name
+ * 
+ * @example
+ * return (
+ *   <PhotoUpload
+ *     isPremiumUser={isPremium}
+ *     onUpsellTrigger={handleShowUpsellModal}
+ *     onPhotoSelect={setSelectedPhoto}
+ *     currentPhoto={entry.photo_url}
+ *     disabled={isSubmitting}
+ *   />
+ * )
+ */
 interface PhotoUploadProps {
   isPremiumUser?: boolean;
   onUpsellTrigger?: () => void;
@@ -28,7 +52,7 @@ const PhotoUpload = React.memo(function PhotoUpload({
   const handleFileSelect = (file: File | null) => {
     if (!isPremiumUser) {
       if (onUpsellTrigger) onUpsellTrigger();
-      return;
+      return; 
       
     }
 
@@ -39,14 +63,25 @@ const PhotoUpload = React.memo(function PhotoUpload({
     }
 
     // Validate file type
-    if (!file.type.startsWith('image/')) {
-      alert('Please select an image file');
+    const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!validImageTypes.includes(file.type)) {
+      const error = createAppError(
+        ErrorCode.MEDIA_INVALID_TYPE,
+        'Please select a valid image file (JPEG, PNG, GIF, or WebP)',
+        { fileType: file.type }
+      );
+      alert(getUserFriendlyErrorMessage(error));
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert('Image must be smaller than 5MB');
+      const error = createAppError(
+        ErrorCode.MEDIA_TOO_LARGE,
+        'Image must be smaller than 5MB',
+        { fileSize: file.size, maxSize: 5 * 1024 * 1024 }
+      );
+      alert(getUserFriendlyErrorMessage(error));
       return;
     }
 
@@ -152,7 +187,7 @@ const PhotoUpload = React.memo(function PhotoUpload({
             <div className="relative rounded-2xl overflow-hidden shadow-lg border border-zen-sage-200">
               <img
                 src={preview}
-                alt="Journal photo"
+                alt={selectedPhoto?.name ? `Journal photo: ${selectedPhoto.name}` : "Uploaded journal photo"}
                 className="w-full h-48 object-cover"
               />
               

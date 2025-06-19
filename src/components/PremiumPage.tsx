@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Crown, AlertCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useJournal } from '../hooks/useJournal';
+import { PREMIUM } from '../constants/uiStrings';
 import { supabase } from '../lib/supabase';
 import Logo from './Logo';
 
@@ -24,41 +25,34 @@ export default function PremiumPage({ onBack }: PremiumPageProps) {
   const [error, setError] = useState('');
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'yearly'>('yearly');
 
+  /**
+   * Plans configuration for subscription options
+   */
   const plans = [
     {
       id: 'monthly',
-      name: 'Monthly Premium',
-      price: '$8.99',
-      period: 'per month',
-      features: [
-        'Unlimited journal entries with photo attachments',
-        'Advanced AI mood analysis & personalized insights',
-        'Custom affirmations with voice playback',
-        'Complete journal history access',
-        'Premium badge collection & achievements',
-        'Priority customer support',
-      ],
+      name: PREMIUM.MONTHLY.NAME,
+      price: PREMIUM.MONTHLY.PRICE,
+      period: PREMIUM.MONTHLY.PERIOD,
+      features: PREMIUM.MONTHLY.FEATURES,
       popular: false,
       priceId: import.meta.env.VITE_STRIPE_PRICE_ID_MONTHLY,
     },
     {
       id: 'yearly',
-      name: 'Yearly Premium',
-      price: '$59.99',
-      period: 'per year',
-      features: [
-        'All Monthly Premium features included',
-        'Save over 44% compared to monthly plan',
-        'VIP priority support with 24-hour response time',
-        'Early access to all new features and updates',
-        'Exclusive "Premium Plus" badge for your collection',
-        'Advanced analytics and mood trend insights',
-      ],
+      name: PREMIUM.YEARLY.NAME,
+      price: PREMIUM.YEARLY.PRICE,
+      period: PREMIUM.YEARLY.PERIOD,
+      features: PREMIUM.YEARLY.FEATURES,
       popular: true,
       priceId: import.meta.env.VITE_STRIPE_PRICE_ID_YEARLY,
     },
   ];
 
+  /**
+   * Handles subscription process by creating a Stripe checkout session
+   * @param {string} priceId - The Stripe price ID for the selected plan
+   */
   const handleSubscribe = useCallback(async (priceId: string) => {
     if (!user) return;
     
@@ -217,11 +211,10 @@ export default function PremiumPage({ onBack }: PremiumPageProps) {
         >
           <div className="text-center mb-8">
             <h2 className="text-3xl font-display font-bold text-zen-sage-800 dark:text-gray-200 mb-4">
-              Choose Your Premium Plan
+              {PREMIUM.TITLE}
             </h2>
             <p className="text-lg text-zen-sage-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Unlock the full potential of Zensai with premium features designed to enhance your mindfulness journey.
-              All plans include a 7-day free trial.
+              {PREMIUM.SUBTITLE}
             </p>
           </div>
 

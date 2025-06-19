@@ -1,7 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Star, Lock, Trophy, Calendar, Target, Sparkles } from 'lucide-react';
+import { BADGES } from '../constants/uiStrings';
 
+/**
+ * Interface for badge data
+ * @interface Badge
+ */
 interface Badge {
   id: string;
   badge_name: string;
@@ -16,6 +21,25 @@ interface Badge {
   progress_percentage: number;
 }
 
+/**
+ * BadgeCard - Displays a single badge with its details and progress
+ * 
+ * @component
+ * @param {Badge} badge - Badge data to display
+ * @param {'sm'|'md'|'lg'} [size='md'] - Size of the badge card
+ * @param {boolean} [showProgress=true] - Whether to show progress information
+ * @param {function} [onClick] - Function to call when badge is clicked
+ * 
+ * @example
+ * return (
+ *   <BadgeCard
+ *     badge={badge}
+ *     size="md"
+ *     showProgress={true}
+ *     onClick={() => handleBadgeClick(badge)}
+ *   />
+ * )
+ */
 interface BadgeCardProps {
   badge: Badge;
   size?: 'sm' | 'md' | 'lg';

@@ -1,7 +1,17 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Trophy, Target, Calendar, Sparkles, TrendingUp } from 'lucide-react';
+import { BADGES } from '../constants/uiStrings';
 
+/**
+ * BadgeProgress - Displays overall badge progress and achievement statistics
+ * 
+ * @component
+ * @param {Array} badges - Array of badge objects with progress information
+ * 
+ * @example
+ * return <BadgeProgress badges={userBadges} />
+ */
 interface BadgeProgressProps {
   badges: Array<{
     id: string;
@@ -76,7 +86,7 @@ const BadgeProgress = React.memo(function BadgeProgress({ badges }: BadgeProgres
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-display font-bold text-zen-sage-800 dark:text-gray-200 flex items-center">
             <TrendingUp className="w-5 h-5 mr-2 text-zen-mint-500" aria-hidden="true" />
-            Badge Progress
+            {BADGES.PROGRESS.TITLE}
           </h3>
           <span className="text-2xl font-bold text-zen-mint-600">
             {completionPercentage}%
@@ -85,8 +95,8 @@ const BadgeProgress = React.memo(function BadgeProgress({ badges }: BadgeProgres
 
         <div className="mb-4">
           <div className="flex justify-between text-sm text-zen-sage-600 dark:text-gray-400 mb-2">
-            <span>{earnedBadges.length} earned</span>
-            <span>{totalBadges} total</span>
+            <span>{BADGES.PROGRESS.EARNED.replace('{count}', earnedBadges.length.toString())}</span>
+            <span>{BADGES.PROGRESS.TOTAL.replace('{count}', totalBadges.toString())}</span>
           </div>
           <div 
             className="w-full bg-zen-sage-200 dark:bg-gray-600 rounded-full h-3"
@@ -106,8 +116,8 @@ const BadgeProgress = React.memo(function BadgeProgress({ badges }: BadgeProgres
         </div>
 
         <p className="text-sm text-zen-sage-600 dark:text-gray-400">
-          You've earned {earnedBadges.length} out of {totalBadges} available badges. 
-          {totalBadges - earnedBadges.length > 0 && ` ${totalBadges - earnedBadges.length} more to go!`}
+          {BADGES.PROGRESS.EARNED.replace('{count}', earnedBadges.length.toString())} out of {BADGES.PROGRESS.TOTAL.replace('{count}', totalBadges.toString())} available badges. 
+          {totalBadges - earnedBadges.length > 0 && ` ${BADGES.PROGRESS.MORE_TO_GO.replace('{count}', (totalBadges - earnedBadges.length).toString())}`}
         </p>
       </motion.div>
 
@@ -123,7 +133,7 @@ const BadgeProgress = React.memo(function BadgeProgress({ badges }: BadgeProgres
         >
           <h3 className="text-lg font-display font-bold text-zen-sage-800 dark:text-gray-200 mb-4 flex items-center">
             <Target className="w-5 h-5 mr-2 text-zen-peach-500" aria-hidden="true" />
-            Almost There!
+            {BADGES.SECTIONS.ALMOST_THERE}
           </h3>
 
           <div className="space-y-3">
@@ -190,7 +200,7 @@ const BadgeProgress = React.memo(function BadgeProgress({ badges }: BadgeProgres
         >
           <h3 className="text-lg font-display font-bold text-zen-sage-800 dark:text-gray-200 mb-4 flex items-center">
             <Trophy className="w-5 h-5 mr-2 text-zen-peach-500" aria-hidden="true" />
-            Recent Achievements
+            {BADGES.SECTIONS.RECENT}
           </h3>
 
           <div className="space-y-3">

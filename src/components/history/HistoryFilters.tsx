@@ -3,7 +3,33 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Filter, ChevronDown, ChevronUp } from 'lucide-react';
 import { MoodLevel } from '../../types';
 import MoodSelector from '../MoodSelector';
+import { HISTORY } from '../../constants/uiStrings';
 
+/**
+ * HistoryFilters - Component for filtering and searching journal entries
+ * 
+ * @component
+ * @param {string} searchTerm - Current search term
+ * @param {function} onSearchChange - Function to update search term
+ * @param {MoodLevel|'all'} filterMood - Current mood filter
+ * @param {function} onFilterMoodChange - Function to update mood filter
+ * @param {'newest'|'oldest'} sortOrder - Current sort order
+ * @param {function} onSortOrderChange - Function to update sort order
+ * @param {function} onClearFilters - Function to clear all filters
+ * 
+ * @example
+ * return (
+ *   <HistoryFilters
+ *     searchTerm={searchTerm}
+ *     onSearchChange={setSearchTerm}
+ *     filterMood={filterMood}
+ *     onFilterMoodChange={setFilterMood}
+ *     sortOrder={sortOrder}
+ *     onSortOrderChange={setSortOrder}
+ *     onClearFilters={clearFilters}
+ *   />
+ * )
+ */
 interface HistoryFiltersProps {
   searchTerm: string;
   onSearchChange: (term: string) => void;
@@ -40,7 +66,7 @@ const HistoryFilters = React.memo(function HistoryFilters({
           <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zen-sage-400 dark:text-gray-500" aria-hidden="true" />
           <input
             type="text"
-            placeholder="Search your journal entries..."
+            placeholder={HISTORY.SEARCH_PLACEHOLDER}
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
             className="w-full pl-12 pr-4 py-3 border border-zen-sage-200 dark:border-gray-600 rounded-2xl focus:ring-2 focus:ring-zen-mint-400 focus:border-transparent bg-white/70 dark:bg-gray-700 text-zen-sage-800 dark:text-gray-200 placeholder-zen-sage-400 dark:placeholder-gray-400"
@@ -57,7 +83,7 @@ const HistoryFilters = React.memo(function HistoryFilters({
             aria-controls="filter-panel"
           >
             <Filter className="w-4 h-4" aria-hidden="true" />
-            <span className="font-medium">Filters</span>
+            <span className="font-medium">{HISTORY.FILTERS.TITLE}</span>
             {showFilters ? <ChevronUp className="w-4 h-4" aria-hidden="true" /> : <ChevronDown className="w-4 h-4" aria-hidden="true" />}
           </button>
 
@@ -67,7 +93,7 @@ const HistoryFilters = React.memo(function HistoryFilters({
               className="text-sm text-zen-mint-600 hover:text-zen-mint-700 font-medium"
               aria-label="Clear all filters"
             >
-              Clear filters
+              {HISTORY.FILTERS.CLEAR}
             </button>
           )}
         </div>
@@ -100,7 +126,7 @@ const HistoryFilters = React.memo(function HistoryFilters({
                       aria-pressed={filterMood === 'all'}
                       aria-labelledby="mood-filter-label"
                     >
-                      All Moods
+                      {HISTORY.FILTERS.ALL_MOODS}
                     </button>
                     <div className="hidden sm:block">
                       <MoodSelector
@@ -131,7 +157,7 @@ const HistoryFilters = React.memo(function HistoryFilters({
                       role="radio"
                       aria-checked={sortOrder === 'newest'}
                     >
-                      Newest First
+                      {HISTORY.FILTERS.NEWEST}
                     </button>
                     <button
                       onClick={() => onSortOrderChange('oldest')}
@@ -143,7 +169,7 @@ const HistoryFilters = React.memo(function HistoryFilters({
                       role="radio"
                       aria-checked={sortOrder === 'oldest'}
                     >
-                      Oldest First
+                      {HISTORY.FILTERS.OLDEST}
                     </button>
                   </div>
                 </div>

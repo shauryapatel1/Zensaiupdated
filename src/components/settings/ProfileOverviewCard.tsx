@@ -3,6 +3,29 @@ import { motion } from 'framer-motion';
 import { Heart, Sparkles, Trophy } from 'lucide-react';
 import LottieAvatar from '../LottieAvatar';
 
+/**
+ * ProfileOverviewCard - Displays user profile information and statistics
+ * 
+ * @component
+ * @param {string} name - User's display name
+ * @param {string} email - User's email address
+ * @param {string} joinedDate - Formatted date when user joined
+ * @param {number} currentStreak - User's current journaling streak
+ * @param {number} bestStreak - User's best journaling streak
+ * @param {number} totalBadgesEarned - Total number of badges earned
+ * 
+ * @example
+ * return (
+ *   <ProfileOverviewCard
+ *     name="John Doe"
+ *     email="john@example.com"
+ *     joinedDate="January 1, 2023"
+ *     currentStreak={5}
+ *     bestStreak={10}
+ *     totalBadgesEarned={8}
+ *   />
+ * )
+ */
 interface ProfileOverviewCardProps {
   name: string;
   email: string;
@@ -23,7 +46,7 @@ const ProfileOverviewCard = React.memo(function ProfileOverviewCard({
   return (
     <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/20 dark:border-gray-600/20 text-center">
       <div className="flex justify-center mb-4">
-        <LottieAvatar mood={4} size="lg" variant="greeting" />
+        <LottieAvatar mood={4} size="lg" variant="greeting" aria-label="Your Zeno fox companion, looking happy" />
       </div>
       
       <h2 className="text-xl font-display font-bold text-zen-sage-800 dark:text-gray-200 mb-2">

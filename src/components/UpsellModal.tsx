@@ -2,7 +2,27 @@ import React, { useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Crown, Sparkles, Check, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { UPSELL } from '../constants/uiStrings';
 
+/**
+ * UpsellModal - Displays a modal to encourage users to upgrade to premium
+ * 
+ * @component
+ * @param {boolean} isOpen - Whether the modal is currently visible
+ * @param {function} onClose - Function to call when the modal is closed
+ * @param {string} featureName - Name of the premium feature being promoted
+ * @param {string} featureDescription - Description of the premium feature
+ * 
+ * @example
+ * return (
+ *   <UpsellModal
+ *     isOpen={showModal}
+ *     onClose={() => setShowModal(false)}
+ *     featureName="Photo Uploads"
+ *     featureDescription="Add photos to your journal entries to capture special moments."
+ *   />
+ * )
+ */
 interface UpsellModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -20,7 +40,11 @@ const UpsellModal = React.memo(function UpsellModal({
   const modalRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
-  // Focus management for accessibility
+  /**
+   * Focus management for accessibility
+   * When modal opens, focus the close button
+   * When modal closes, restore focus to the previously focused element
+   */
   useEffect(() => {
     if (isOpen && closeButtonRef.current) {
       // Focus the close button when modal opens
@@ -38,7 +62,10 @@ const UpsellModal = React.memo(function UpsellModal({
     };
   }, [isOpen]);
 
-  // Trap focus within the modal
+  /**
+   * Trap focus within the modal for keyboard navigation
+   * @param {KeyboardEvent} e - The keyboard event
+   */
   const handleTabKey = (e: KeyboardEvent) => {
     if (!modalRef.current || e.key !== 'Tab') return;
 
@@ -61,7 +88,11 @@ const UpsellModal = React.memo(function UpsellModal({
     }
   };
 
-  // Handle keyboard events
+  /**
+   * Handle keyboard events for the modal
+   * - Escape key closes the modal
+   * - Tab key traps focus within the modal
+   */
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -80,18 +111,15 @@ const UpsellModal = React.memo(function UpsellModal({
     };
   }, [isOpen, onClose]);
 
+  /**
+   * Navigate to the premium page when user clicks upgrade
+   */
   const handleUpgrade = () => {
     onClose();
     navigate('/premium');
   };
 
-  const premiumFeatures = [
-    'Unlimited journal entries with photos',
-    'Unlimited AI mood analysis & affirmations',
-    'Voice synthesis for all affirmations',
-    'Full journal history access',
-    'Premium badges collection'
-  ];
+  const premiumFeatures = UPSELL.FEATURES;
 
   return (
     <AnimatePresence>
@@ -120,8 +148,8 @@ const UpsellModal = React.memo(function UpsellModal({
                 <div className="w-10 h-10 bg-gradient-to-br from-zen-mint-400 to-zen-peach-400 rounded-full flex items-center justify-center">
                   <Crown className="w-5 h-5 text-white" />
                 </div>
-                <h3 id="modal-title" className="text-xl font-display font-bold text-zen-sage-800 dark:text-gray-200">
-                  Upgrade to Premium
+                <h3 id="modal-title" className="text-xl font-display font-bold text-zen-sage-800 dark:text-gray-200"> 
+                  {UPSELL.TITLE}
                 </h3>
               </div>
               <button
@@ -167,9 +195,9 @@ const UpsellModal = React.memo(function UpsellModal({
                 className="w-full py-3 bg-gradient-to-r from-zen-mint-400 to-zen-mint-500 text-white font-medium rounded-xl hover:from-zen-mint-500 hover:to-zen-mint-600 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
                 aria-label="Upgrade to premium subscription"
               >
-                <Crown className="w-4 h-4" aria-hidden="true" />
-                <span>Upgrade to Premium</span>
-                <ArrowRight className="w-4 h-4 ml-1" aria-hidden="true" />
+                <Crown className="w-4 h-4" aria-hidden="true" /> 
+                <span>{UPSELL.BUTTONS.UPGRADE}</span>
+                <ArrowRight className="w-4 h-4 ml-1" aria-hidden="true" /> 
               </button>
               
               <button
@@ -177,13 +205,13 @@ const UpsellModal = React.memo(function UpsellModal({
                 className="w-full py-3 bg-zen-sage-100 dark:bg-gray-700 text-zen-sage-700 dark:text-gray-300 font-medium rounded-xl hover:bg-zen-sage-200 dark:hover:bg-gray-600 transition-all duration-300"
                 aria-label="Dismiss dialog"
               >
-                Maybe Later
+                {UPSELL.BUTTONS.LATER}
               </button>
             </div>
             
             {/* Free Trial Note */}
             <p className="text-center text-zen-sage-500 dark:text-gray-400 text-xs mt-4" aria-live="polite">
-              Includes 7-day free trial. Cancel anytime.
+              {UPSELL.TRIAL_NOTE}
             </p>
           </motion.div>
         </motion.div>

@@ -2,7 +2,12 @@ import { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { usePremium } from './usePremium';
+import { ErrorCode, createAppError, getUserFriendlyErrorMessage } from '../types/errors';
 
+/**
+ * Interface for prompt generation response
+ * @interface PromptResponse
+ */
 interface PromptResponse {
   success: boolean;
   prompt: string;
@@ -11,6 +16,21 @@ interface PromptResponse {
   timestamp: string;
 }
 
+/**
+ * Custom hook for generating journal prompts
+ * 
+ * @returns {Object} Prompt generation methods and state
+ * 
+ * @example
+ * const { 
+ *   generatePrompt, 
+ *   isLoading, 
+ *   error 
+ * } = usePromptGenerator();
+ * 
+ * // Generate a prompt
+ * const prompt = await generatePrompt({ mood: 'happy' });
+ */
 export function usePromptGenerator() {
   const { user } = useAuth();
   const { isPremium, trackFeatureUsage } = usePremium();
@@ -18,7 +38,13 @@ export function usePromptGenerator() {
   const [error, setError] = useState<string | null>(null);
   const [dailyUsageCount, setDailyUsageCount] = useState(0);
 
-  // Fallback prompts for when the AI service is unavailable
+  /**
+   * Get a fallback prompt when AI service is unavailable
+   * 
+   * @param {string} [mood] - Optional mood to tailor the prompt
+   * @param {string[]} [previousPrompts=[]] - Previously used prompts to avoid repetition
+   * @returns {string} A suitable prompt
+   */
   const getFallbackPrompt = (mood?: string, previousPrompts: string[] = []): string => {
     const moodBasedPrompts: Record<string, string[]> = {
       'very sad': [
@@ -85,6 +111,14 @@ export function usePromptGenerator() {
     return promptsToUse[dayOfYear % promptsToUse.length];
   };
 
+  /**
+   * Generate a journal prompt
+   * 
+   * @param {Object} [options] - Generation options
+   * @param {string} [options.mood] - User's current mood
+   * @param {string[]} [options.previousPrompts] - Previously used prompts to avoid repetition
+   * @returns {Promise<string|null>} Generated prompt or null on failure
+   */
   const generatePrompt = async (options?: {
     mood?: string;
     previousPrompts?: string[];
@@ -94,7 +128,11 @@ export function usePromptGenerator() {
     
     // Check if free user has reached daily limit
     if (!isPremium && !trackFeatureUsage('prompt-generator')) {
-      setError('Daily limit reached. Upgrade to Premium for unlimited prompts.');
+      const error = createAppError(
+        ErrorCode.PREMIUM_DAILY_LIMIT,
+        'Daily limit reached. Upgrade to Premium for unlimited prompts.'
+      );
+      setError(getUserFriendlyErrorMessage(error));
       setIsLoading(false);
       return null;
     }
@@ -109,7 +147,12 @@ export function usePromptGenerator() {
       });
 
       if (functionError) {
-        console.warn('Edge function error, using fallback:', functionError);
+        console.warn('Prompt generation edge function error:', functionError);
+        const error = createAppError(
+          ErrorCode.AI_SERVICE_UNAVAILABLE,
+          'Unable to generate a personalized prompt',
+          { functionError }
+        );
         // Use fallback instead of throwing error
         const fallbackPrompt = getFallbackPrompt(options?.mood, options?.previousPrompts);
         return fallbackPrompt;
@@ -118,7 +161,12 @@ export function usePromptGenerator() {
       const response: PromptResponse = data;
       
       if (!response.success) {
-        console.warn('Prompt generation failed, using fallback:', response.error);
+        console.warn('Prompt generation failed:', response.error);
+        const error = createAppError(
+          ErrorCode.AI_GENERATION_FAILED,
+          'Failed to generate a personalized prompt',
+          { response }
+        );
         // Use fallback instead of throwing error
         const fallbackPrompt = getFallbackPrompt(options?.mood, options?.previousPrompts);
         return fallbackPrompt;
@@ -126,7 +174,12 @@ export function usePromptGenerator() {
 
       return response.prompt;
     } catch (err) {
-      console.warn('Error calling prompt generator, using fallback:', err);
+      console.warn('Error in prompt generator:', err);
+      const error = createAppError(
+        ErrorCode.UNKNOWN_ERROR,
+        'An unexpected error occurred while generating a prompt',
+        undefined, err
+      );
       // Use fallback instead of throwing error
       const fallbackPrompt = getFallbackPrompt(options?.mood, options?.previousPrompts);
       return fallbackPrompt;

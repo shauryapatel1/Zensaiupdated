@@ -3,7 +3,12 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { usePremium } from './usePremium';
 import { MoodLevel } from '../types';
+import { ErrorCode, createAppError, getUserFriendlyErrorMessage } from '../types/errors';
 
+/**
+ * Interface for mood quote generation response
+ * @interface MoodQuoteResponse
+ */
 interface MoodQuoteResponse {
   success: boolean;
   quote: string;
@@ -13,6 +18,21 @@ interface MoodQuoteResponse {
   timestamp: string;
 }
 
+/**
+ * Custom hook for generating mood-appropriate quotes
+ * 
+ * @returns {Object} Quote generation methods and state
+ * 
+ * @example
+ * const { 
+ *   generateMoodQuote, 
+ *   isGenerating, 
+ *   error 
+ * } = useMoodQuoteGenerator();
+ * 
+ * // Generate a quote for a specific mood
+ * const quote = await generateMoodQuote(4, "I'm feeling optimistic today");
+ */
 export function useMoodQuoteGenerator() {
   const { user } = useAuth();
   const { isPremium, trackFeatureUsage } = usePremium();
@@ -20,6 +40,14 @@ export function useMoodQuoteGenerator() {
   const [error, setError] = useState<string | null>(null);
   const [dailyUsageCount, setDailyUsageCount] = useState(0);
 
+  /**
+   * Generate a quote appropriate for the user's mood
+   * 
+   * @param {MoodLevel} mood - User's mood level
+   * @param {string} [journalEntry] - Optional journal entry for context
+   * @param {string[]} [previousQuotes] - Previously shown quotes to avoid repetition
+   * @returns {Promise<{quote: string, attribution?: string}|null>} Generated quote or null on failure
+   */
   const generateMoodQuote = async (
     mood: MoodLevel,
     journalEntry?: string,
@@ -30,7 +58,12 @@ export function useMoodQuoteGenerator() {
     
     // Check if free user has reached daily limit
     if (!isPremium && !trackFeatureUsage('mood-quote-generator')) {
-      setError('Daily limit reached. Upgrade to Premium for unlimited mood quotes.');
+      const error = createAppError(
+        ErrorCode.PREMIUM_DAILY_LIMIT,
+        'Daily limit reached. Upgrade to Premium for unlimited mood quotes.',
+        { feature: 'mood-quote-generator' }
+      );
+      setError(getUserFriendlyErrorMessage(error));
       setIsGenerating(false);
       return null;
     }
@@ -49,7 +82,12 @@ export function useMoodQuoteGenerator() {
       });
 
       if (functionError) {
-        console.error('Edge function error:', functionError);
+        console.error('Mood quote generation edge function error:', functionError);
+        const error = createAppError(
+          ErrorCode.AI_SERVICE_UNAVAILABLE,
+          'Failed to generate mood quote',
+          { functionError }
+        );
         setError('Failed to generate mood quote');
         return null;
       }
@@ -57,7 +95,12 @@ export function useMoodQuoteGenerator() {
       const response: MoodQuoteResponse = data;
       
       if (!response.success) {
-        setError(response.error || 'Failed to generate mood quote');
+        const error = createAppError(
+          ErrorCode.AI_GENERATION_FAILED,
+          response.error || 'Failed to generate mood quote',
+          { response }
+        );
+        setError(getUserFriendlyErrorMessage(error));
         // Return the fallback quote even if marked as unsuccessful
         return {
           quote: response.quote,
@@ -71,7 +114,12 @@ export function useMoodQuoteGenerator() {
       };
     } catch (err) {
       console.error('Error calling mood quote generator:', err);
-      setError('An unexpected error occurred during quote generation');
+      const error = createAppError(
+        ErrorCode.UNKNOWN_ERROR,
+        'An unexpected error occurred during quote generation',
+        undefined, err
+      );
+      setError(getUserFriendlyErrorMessage(error));
       return null;
     } finally {
       setIsGenerating(false);
@@ -86,7 +134,12 @@ export function useMoodQuoteGenerator() {
   };
 }
 
-// Helper function to convert mood level to descriptive string
+/**
+ * Helper function to convert mood level to descriptive string
+ * 
+ * @param {MoodLevel} mood - Numeric mood level (1-5)
+ * @returns {string} String representation of mood
+ */
 function getMoodString(mood: MoodLevel): string {
   switch (mood) {
     case 1:

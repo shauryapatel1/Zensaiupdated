@@ -1,6 +1,21 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+/**
+ * MoodQuoteDisplay - Displays inspirational quotes based on the user's mood
+ * 
+ * @component
+ * @param {Object|null} moodQuote - Quote object with text and optional attribution
+ * @param {boolean} showMoodQuote - Whether to show the quote
+ * 
+ * @example
+ * return (
+ *   <MoodQuoteDisplay
+ *     moodQuote={{ quote: "The best way to predict the future is to create it.", attribution: "Abraham Lincoln" }}
+ *     showMoodQuote={true}
+ *   />
+ * )
+ */
 interface MoodQuoteDisplayProps {
   moodQuote: { quote: string; attribution?: string } | null;
   showMoodQuote: boolean;

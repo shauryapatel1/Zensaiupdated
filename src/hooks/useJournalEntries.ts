@@ -2,7 +2,12 @@ import { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { MoodLevel } from '../types';
+import { ErrorCode, createAppError, getUserFriendlyErrorMessage } from '../types/errors';
 
+/**
+ * Interface for journal entry data
+ * @interface JournalEntry
+ */
 interface JournalEntry {
   id: string;
   user_id: string;
@@ -15,17 +20,41 @@ interface JournalEntry {
   updated_at: string;
 }
 
+/**
+ * Interface for add entry result
+ * @interface AddEntryResult
+ */
 interface AddEntryResult {
   success: boolean;
   error?: string;
 }
 
+/**
+ * Custom hook for managing journal entries CRUD operations
+ * 
+ * @returns {Object} Journal entries methods and state
+ * 
+ * @example
+ * const { 
+ *   entries, 
+ *   loadEntries,
+ *   addEntry, 
+ *   updateEntry,
+ *   deleteEntry
+ * } = useJournalEntries();
+ */
 export function useJournalEntries() {
   const { user, isAuthenticated } = useAuth();
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  /**
+   * Load journal entries from Supabase
+   * 
+   * @param {boolean} isPremium - Whether the user has premium access
+   * @returns {Promise<void>}
+   */
   const loadEntries = async (isPremium: boolean) => {
     if (!user) return;
 
@@ -68,6 +97,15 @@ export function useJournalEntries() {
     }
   };
 
+  /**
+   * Add a new journal entry
+   * 
+   * @param {string} content - Journal entry content
+   * @param {string|null} title - Optional entry title
+   * @param {MoodLevel} mood - Selected mood level
+   * @param {File} [photoFile] - Optional photo attachment
+   * @returns {Promise<AddEntryResult>} Result object
+   */
   const addEntry = async (
     content: string, 
     title: string | null,
@@ -75,11 +113,23 @@ export function useJournalEntries() {
     photoFile?: File
   ): Promise<AddEntryResult> => {
     if (!user || !isAuthenticated) {
-      return { success: false, error: 'You must be logged in to save entries' };
+      return { 
+        success: false, 
+        error: getUserFriendlyErrorMessage(createAppError(
+          ErrorCode.NOT_AUTHENTICATED,
+          'You must be logged in to save entries'
+        ))
+      };
     }
 
-    if (!content.trim()) {
-      return { success: false, error: 'Entry content cannot be empty' };
+    if (!content?.trim()) {
+      return { 
+        success: false, 
+        error: getUserFriendlyErrorMessage(createAppError(
+          ErrorCode.JOURNAL_ENTRY_EMPTY,
+          'Entry content cannot be empty'
+        ))
+      };
     }
 
     try {
@@ -109,7 +159,14 @@ export function useJournalEntries() {
 
           if (uploadError) {
             console.error('Photo upload error:', uploadError);
-            return { success: false, error: 'Failed to upload photo. Please try again.' };
+            return { 
+              success: false, 
+              error: getUserFriendlyErrorMessage(createAppError(
+                ErrorCode.MEDIA_UPLOAD_FAILED,
+                'Failed to upload photo. Please try again.',
+                { uploadError }
+              ))
+            };
           }
 
           // Get public URL
@@ -121,7 +178,15 @@ export function useJournalEntries() {
           photoFilename = photoFile.name;
         } catch (photoError) {
           console.error('Photo processing error:', photoError);
-          return { success: false, error: 'Failed to process photo. Please try again.' };
+          return { 
+            success: false, 
+            error: getUserFriendlyErrorMessage(createAppError(
+              ErrorCode.MEDIA_UPLOAD_FAILED,
+              'Failed to process photo. Please try again.',
+              undefined,
+              photoError
+            ))
+          };
         }
       }
 
@@ -141,7 +206,14 @@ export function useJournalEntries() {
 
       if (entryError) {
         console.error('Error saving entry:', entryError);
-        return { success: false, error: 'Failed to save your journal entry. Please try again.' };
+        return { 
+          success: false, 
+          error: getUserFriendlyErrorMessage(createAppError(
+            ErrorCode.JOURNAL_SAVE_FAILED,
+            'Failed to save your journal entry. Please try again.',
+            { entryError }
+          ))
+        };
       }
 
       // Update local state
@@ -150,10 +222,29 @@ export function useJournalEntries() {
       return { success: true };
     } catch (err) {
       console.error('Error adding entry:', err);
-      return { success: false, error: 'An unexpected error occurred. Please try again.' };
+      return { 
+        success: false, 
+        error: getUserFriendlyErrorMessage(createAppError(
+          ErrorCode.UNKNOWN_ERROR,
+          'An unexpected error occurred. Please try again.',
+          undefined,
+          err
+        ))
+      };
     }
   };
 
+  /**
+   * Update an existing journal entry
+   * 
+   * @param {string} entryId - ID of the entry to update
+   * @param {string} content - Updated content
+   * @param {string|null} title - Updated title
+   * @param {MoodLevel} mood - Updated mood
+   * @param {File} [photoFile] - New photo (optional)
+   * @param {boolean} [removePhoto] - Whether to remove existing photo
+   * @returns {Promise<AddEntryResult>} Result object
+   */
   const updateEntry = async (
     entryId: string, 
     content: string, 
@@ -163,11 +254,23 @@ export function useJournalEntries() {
     removePhoto?: boolean
   ): Promise<AddEntryResult> => {
     if (!user || !isAuthenticated) {
-      return { success: false, error: 'You must be logged in to update entries' };
+      return { 
+        success: false, 
+        error: getUserFriendlyErrorMessage(createAppError(
+          ErrorCode.NOT_AUTHENTICATED,
+          'You must be logged in to update entries'
+        ))
+      };
     }
 
-    if (!content.trim()) {
-      return { success: false, error: 'Entry content cannot be empty' };
+    if (!content?.trim()) {
+      return { 
+        success: false, 
+        error: getUserFriendlyErrorMessage(createAppError(
+          ErrorCode.JOURNAL_ENTRY_EMPTY,
+          'Entry content cannot be empty'
+        ))
+      };
     }
 
     try {
@@ -223,9 +326,17 @@ export function useJournalEntries() {
 
           if (uploadError) {
             console.error('Photo upload error:', uploadError);
-            return { success: false, error: 'Failed to upload photo. Please try again.' };
+            return { 
+              success: false, 
+              error: getUserFriendlyErrorMessage(createAppError(
+                ErrorCode.MEDIA_UPLOAD_FAILED,
+                'Failed to upload photo. Please try again.',
+                { uploadError }
+              ))
+            };
           }
 
+          // Get public URL
           const { data: urlData } = supabase.storage
             .from('journal-photos')
             .getPublicUrl(fileName);
@@ -234,7 +345,14 @@ export function useJournalEntries() {
           photoFilename = photoFile.name;
         } catch (photoError) {
           console.error('Photo processing error:', photoError);
-          return { success: false, error: 'Failed to process photo. Please try again.' };
+          return { 
+            success: false, 
+            error: getUserFriendlyErrorMessage(createAppError(
+              ErrorCode.MEDIA_UPLOAD_FAILED,
+              'Failed to process photo. Please try again.',
+              undefined, photoError
+            ))
+          };
         }
       } else {
         // Keep existing photo
@@ -243,7 +361,14 @@ export function useJournalEntries() {
       }
 
       // Prepare update data
-      const updateData: any = {
+      const updateData: {
+        content: string;
+        title: string | null;
+        mood: string;
+        updated_at: string;
+        photo_url?: string | null;
+        photo_filename?: string | null;
+      } = {
         content: content.trim(),
         title: title?.trim() || null,
         mood: moodString,
@@ -265,7 +390,14 @@ export function useJournalEntries() {
 
       if (updateError) {
         console.error('Error updating entry:', updateError);
-        return { success: false, error: 'Failed to update your journal entry. Please try again.' };
+        return { 
+          success: false, 
+          error: getUserFriendlyErrorMessage(createAppError(
+            ErrorCode.JOURNAL_UPDATE_FAILED,
+            'Failed to update your journal entry. Please try again.',
+            { updateError }
+          ))
+        };
       }
 
       // Update local state
@@ -285,13 +417,32 @@ export function useJournalEntries() {
       return { success: true };
     } catch (err) {
       console.error('Error updating entry:', err);
-      return { success: false, error: 'An unexpected error occurred. Please try again.' };
+      return { 
+        success: false, 
+        error: getUserFriendlyErrorMessage(createAppError(
+          ErrorCode.UNKNOWN_ERROR,
+          'An unexpected error occurred. Please try again.',
+          undefined, err
+        ))
+      };
     }
   };
 
+  /**
+   * Delete a journal entry
+   * 
+   * @param {string} entryId - ID of the entry to delete
+   * @returns {Promise<AddEntryResult>} Result object
+   */
   const deleteEntry = async (entryId: string): Promise<AddEntryResult> => {
     if (!user || !isAuthenticated) {
-      return { success: false, error: 'You must be logged in to delete entries' };
+      return { 
+        success: false, 
+        error: getUserFriendlyErrorMessage(createAppError(
+          ErrorCode.NOT_AUTHENTICATED,
+          'You must be logged in to delete entries'
+        ))
+      };
     }
 
     try {
@@ -324,7 +475,14 @@ export function useJournalEntries() {
 
       if (deleteError) {
         console.error('Error deleting entry:', deleteError);
-        return { success: false, error: 'Failed to delete your journal entry. Please try again.' };
+        return { 
+          success: false, 
+          error: getUserFriendlyErrorMessage(createAppError(
+            ErrorCode.JOURNAL_DELETE_FAILED,
+            'Failed to delete your journal entry. Please try again.',
+            { deleteError }
+          ))
+        };
       }
 
       // Update local state
@@ -333,7 +491,14 @@ export function useJournalEntries() {
       return { success: true };
     } catch (err) {
       console.error('Error deleting entry:', err);
-      return { success: false, error: 'An unexpected error occurred. Please try again.' };
+      return { 
+        success: false, 
+        error: getUserFriendlyErrorMessage(createAppError(
+          ErrorCode.UNKNOWN_ERROR,
+          'An unexpected error occurred. Please try again.',
+          undefined, err
+        ))
+      };
     }
   };
 
@@ -348,7 +513,12 @@ export function useJournalEntries() {
   };
 }
 
-// Helper function to convert mood level to descriptive string
+/**
+ * Helper function to convert mood level to descriptive string
+ * 
+ * @param {MoodLevel} mood - Numeric mood level (1-5)
+ * @returns {string} String representation of mood
+ */
 function getMoodString(mood: MoodLevel): string {
   switch (mood) {
     case 1:

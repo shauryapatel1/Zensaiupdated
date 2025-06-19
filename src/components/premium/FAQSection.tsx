@@ -1,30 +1,16 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { PREMIUM } from '../../constants/uiStrings';
 
-interface FAQItem {
-  question: string;
-  answer: string;
-}
-
+/**
+ * FAQSection - Displays frequently asked questions about premium subscriptions
+ * 
+ * @component
+ * @example
+ * return <FAQSection />
+ */
 const FAQSection = React.memo(function FAQSection() {
-  const faqItems: FAQItem[] = [
-    {
-      question: "What happens after my 7-day free trial?",
-      answer: "After your trial ends, you'll be charged for your selected plan. You can cancel anytime before the trial ends to avoid being charged. We'll send you a reminder email before your trial expires."
-    },
-    {
-      question: "Can I switch between monthly and yearly plans?",
-      answer: "Yes, you can switch plans at any time. If you upgrade from monthly to yearly, you'll receive a prorated credit for your remaining monthly subscription. Switching from yearly to monthly will take effect at your next renewal date."
-    },
-    {
-      question: "How do I cancel my subscription?",
-      answer: "You can cancel your subscription anytime from the Settings page or by contacting our support team. Your premium features will remain active until the end of your current billing period, and you won't be charged again."
-    },
-    {
-      question: "Is my payment information secure?",
-      answer: "Absolutely. All payments are processed securely through Stripe, a PCI-DSS Level 1 certified payment processor. We never store your credit card information on our servers, ensuring maximum security for your financial data."
-    }
-  ];
+  const faqItems = PREMIUM.FAQ.ITEMS;
 
   return (
     <motion.div
@@ -34,7 +20,7 @@ const FAQSection = React.memo(function FAQSection() {
     >
       <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20 dark:border-gray-600/20">
         <h3 className="text-2xl font-display font-bold text-zen-sage-800 dark:text-gray-200 mb-6 text-center">
-          Frequently Asked Questions
+          {PREMIUM.FAQ.TITLE}
         </h3>
         
         <div className="space-y-4 max-w-3xl mx-auto">
@@ -47,10 +33,10 @@ const FAQSection = React.memo(function FAQSection() {
               transition={{ delay: 0.6 + index * 0.1 }}
             >
               <h4 className="text-lg font-display font-semibold text-zen-sage-800 dark:text-gray-200 mb-2">
-                {item.question}
+                {item.QUESTION}
               </h4>
               <p className="text-zen-sage-600 dark:text-gray-400 leading-relaxed">
-                {item.answer}
+                {item.ANSWER}
               </p>
             </motion.div>
           ))}

@@ -2,6 +2,7 @@ import React from 'react';
 import Lottie from 'lottie-react';
 import { motion } from 'framer-motion';
 import { MoodLevel } from '../types';
+import { APP_NAME } from '../constants/uiStrings';
 
 // Import all Lottie animation files
 import zenoHiAnimation from '../assets/Zeno saying Hi!!.json';
@@ -10,6 +11,27 @@ import zenoTypingAnimation from '../assets/Zeno typing on Laptop.json';
 import zenoCodingAnimation from '../assets/Zeno coding and drnking coffee.json';
 import zenoMusicAnimation from '../assets/Zeno listening Music (headphones On).json';
 
+/**
+ * LottieAvatar - Animated fox avatar with different moods and variants
+ * 
+ * @component
+ * @param {MoodLevel} [mood=3] - Mood level affecting animation style
+ * @param {'sm'|'md'|'lg'} [size='md'] - Size of the avatar
+ * @param {'idle'|'greeting'|'journaling'|'typing'|'coding'|'music'} [variant='idle'] - Animation variant
+ * @param {boolean} [animate=true] - Whether to animate the avatar
+ * @param {string} [aria-label] - Accessibility label
+ * @param {string} [className] - Optional CSS class name
+ * 
+ * @example
+ * return (
+ *   <LottieAvatar
+ *     mood={4}
+ *     size="lg"
+ *     variant="greeting"
+ *     animate={true}
+ *   />
+ * )
+ */
 interface LottieAvatarProps {
   mood?: MoodLevel;
   size?: 'sm' | 'md' | 'lg';
@@ -81,7 +103,7 @@ const LottieAvatar = React.memo(function LottieAvatar({
       className={`${sizeClasses[size]} relative flex items-center justify-center ${getMoodStyling()}`}
       className={`${sizeClasses[size]} relative flex items-center justify-center ${getMoodStyling()} ${className}`}
       role="img"
-      aria-label={ariaLabel || `Zeno the fox in ${variant} mode, feeling ${mood >= 4 ? 'happy' : mood <= 2 ? 'contemplative' : 'neutral'}`}
+      aria-label={ariaLabel || `Zeno the fox companion for ${APP_NAME} in ${variant} mode, feeling ${mood >= 4 ? 'happy' : mood <= 2 ? 'contemplative' : 'neutral'}`}
       aria-live={variant === 'greeting' ? 'polite' : 'off'}
       animate={animate ? {
         y: [0, -5, 0],
