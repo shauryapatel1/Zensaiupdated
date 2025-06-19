@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { usePremium } from './usePremium';
 import { MoodLevel } from '../types';
+import { ErrorCode, createAppError, getUserFriendlyErrorMessage } from '../types/errors';
 
 /**
  * Interface for affirmation generation response
@@ -49,8 +50,12 @@ export function useAffirmationGenerator() {
     journalEntry: string, 
     mood: MoodLevel
   ): Promise<string | null> => {
-    if (!journalEntry.trim()) {
-      setError('Journal entry is required for affirmation generation');
+    if (!journalEntry?.trim()) {
+      const error = createAppError(
+        ErrorCode.VALIDATION_ERROR,
+        'Journal entry is required for affirmation generation'
+      );
+      setError(getUserFriendlyErrorMessage(error));
       return null;
     }
 
@@ -59,7 +64,12 @@ export function useAffirmationGenerator() {
 
     // Check if free user has reached daily limit
     if (!isPremium && !trackFeatureUsage('affirmation-generator')) {
-      setError('Daily limit reached. Upgrade to Premium for unlimited affirmations.');
+      const error = createAppError(
+        ErrorCode.PREMIUM_DAILY_LIMIT,
+        'Daily limit reached. Upgrade to Premium for unlimited affirmations.',
+        { feature: 'affirmation-generator' }
+      );
+      setError(getUserFriendlyErrorMessage(error));
       setIsGenerating(false);
       return null;
     }
@@ -77,7 +87,12 @@ export function useAffirmationGenerator() {
       });
 
       if (functionError) {
-        console.error('Edge function error:', functionError);
+        console.error('Affirmation generation edge function error:', functionError);
+        const error = createAppError(
+          ErrorCode.AI_SERVICE_UNAVAILABLE,
+          'Failed to generate affirmation',
+          { functionError }
+        );
         setError('Failed to generate affirmation');
         return null;
       }
@@ -85,7 +100,12 @@ export function useAffirmationGenerator() {
       const response: AffirmationResponse = data;
       
       if (!response.success) {
-        setError(response.error || 'Failed to generate affirmation');
+        const error = createAppError(
+          ErrorCode.AI_GENERATION_FAILED,
+          response.error || 'Failed to generate affirmation',
+          { response }
+        );
+        setError(getUserFriendlyErrorMessage(error));
         // Return the fallback affirmation even if marked as unsuccessful
         return response.affirmation || null;
       }
@@ -93,7 +113,12 @@ export function useAffirmationGenerator() {
       return response.affirmation;
     } catch (err) {
       console.error('Error calling affirmation generator:', err);
-      setError('An unexpected error occurred during affirmation generation');
+      const error = createAppError(
+        ErrorCode.UNKNOWN_ERROR,
+        'An unexpected error occurred during affirmation generation',
+        undefined, err
+      );
+      setError(getUserFriendlyErrorMessage(error));
       return null;
     } finally {
       setIsGenerating(false);

@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { usePremium } from './usePremium';
+import { ErrorCode, createAppError, getUserFriendlyErrorMessage } from '../types/errors';
 
 /**
  * Interface for voice synthesis settings
@@ -63,14 +64,22 @@ export function useVoiceSynthesis() {
     text: string,
     voiceSettings?: VoiceSettings
   ): Promise<boolean> => {
-    if (!text.trim()) {
-      setError('Text is required for speech generation');
+    if (!text?.trim()) {
+      const error = createAppError(
+        ErrorCode.VALIDATION_ERROR,
+        'Text is required for speech generation'
+      );
+      setError(getUserFriendlyErrorMessage(error));
       return false;
     }
     
     // Check if free user has reached daily limit
     if (!isPremium && !trackFeatureUsage('voice-synthesis')) {
-      setError('Voice synthesis is a premium feature. Upgrade to unlock unlimited voice playback.');
+      const error = createAppError(
+        ErrorCode.PREMIUM_REQUIRED,
+        'Voice synthesis is a premium feature. Upgrade to unlock unlimited voice playback.'
+      );
+      setError(getUserFriendlyErrorMessage(error));
       return false;
     }
 
@@ -92,7 +101,12 @@ export function useVoiceSynthesis() {
       });
 
       if (functionError) {
-        console.error('Edge function error:', functionError);
+        console.error('Speech generation edge function error:', functionError);
+        const error = createAppError(
+          ErrorCode.AI_GENERATION_FAILED,
+          'Failed to generate speech',
+          { functionError }
+        );
         setError('Failed to generate speech');
         return false;
       }
@@ -100,7 +114,12 @@ export function useVoiceSynthesis() {
       const response: SpeechResponse = data;
       
       if (!response.success || !response.audio_url) {
-        setError(response.error || 'Failed to generate speech');
+        const error = createAppError(
+          ErrorCode.AI_GENERATION_FAILED,
+          response.error || 'Failed to generate speech',
+          { response }
+        );
+        setError(getUserFriendlyErrorMessage(error));
         return false;
       }
 
@@ -116,7 +135,12 @@ export function useVoiceSynthesis() {
       });
       audio.addEventListener('error', () => {
         setIsPlaying(false);
-        setError('Failed to play audio');
+        const error = createAppError(
+          ErrorCode.MEDIA_UPLOAD_FAILED,
+          'Failed to play audio',
+          { audioSrc: response.audio_url }
+        );
+        setError(getUserFriendlyErrorMessage(error));
         audioRef.current = null;
       });
 
@@ -126,14 +150,25 @@ export function useVoiceSynthesis() {
         return true;
       } catch (playError) {
         console.error('Audio play error:', playError);
-        setError('Failed to play audio. Please check your browser settings.');
+        const error = createAppError(
+          ErrorCode.MEDIA_UPLOAD_FAILED,
+          'Failed to play audio. Please check your browser settings.',
+          { playError }
+        );
+        setError(getUserFriendlyErrorMessage(error));
         setIsPlaying(false);
         return false;
       }
 
     } catch (err) {
       console.error('Error generating speech:', err);
-      setError('An unexpected error occurred during speech generation');
+      const error = createAppError(
+        ErrorCode.UNKNOWN_ERROR,
+        'An unexpected error occurred during speech generation',
+        undefined,
+        err
+      );
+      setError(getUserFriendlyErrorMessage(error));
       return false;
     } finally {
       setIsGenerating(false);

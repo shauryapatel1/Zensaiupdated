@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { usePremium } from './usePremium';
 import { MoodLevel } from '../types';
+import { ErrorCode, createAppError, getUserFriendlyErrorMessage } from '../types/errors';
 
 /**
  * Interface for mood quote generation response
@@ -57,7 +58,12 @@ export function useMoodQuoteGenerator() {
     
     // Check if free user has reached daily limit
     if (!isPremium && !trackFeatureUsage('mood-quote-generator')) {
-      setError('Daily limit reached. Upgrade to Premium for unlimited mood quotes.');
+      const error = createAppError(
+        ErrorCode.PREMIUM_DAILY_LIMIT,
+        'Daily limit reached. Upgrade to Premium for unlimited mood quotes.',
+        { feature: 'mood-quote-generator' }
+      );
+      setError(getUserFriendlyErrorMessage(error));
       setIsGenerating(false);
       return null;
     }
@@ -76,7 +82,12 @@ export function useMoodQuoteGenerator() {
       });
 
       if (functionError) {
-        console.error('Edge function error:', functionError);
+        console.error('Mood quote generation edge function error:', functionError);
+        const error = createAppError(
+          ErrorCode.AI_SERVICE_UNAVAILABLE,
+          'Failed to generate mood quote',
+          { functionError }
+        );
         setError('Failed to generate mood quote');
         return null;
       }
@@ -84,7 +95,12 @@ export function useMoodQuoteGenerator() {
       const response: MoodQuoteResponse = data;
       
       if (!response.success) {
-        setError(response.error || 'Failed to generate mood quote');
+        const error = createAppError(
+          ErrorCode.AI_GENERATION_FAILED,
+          response.error || 'Failed to generate mood quote',
+          { response }
+        );
+        setError(getUserFriendlyErrorMessage(error));
         // Return the fallback quote even if marked as unsuccessful
         return {
           quote: response.quote,
@@ -98,7 +114,12 @@ export function useMoodQuoteGenerator() {
       };
     } catch (err) {
       console.error('Error calling mood quote generator:', err);
-      setError('An unexpected error occurred during quote generation');
+      const error = createAppError(
+        ErrorCode.UNKNOWN_ERROR,
+        'An unexpected error occurred during quote generation',
+        undefined, err
+      );
+      setError(getUserFriendlyErrorMessage(error));
       return null;
     } finally {
       setIsGenerating(false);

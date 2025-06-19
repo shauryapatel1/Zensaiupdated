@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useJournal } from './useJournal';
+import { safeStorage, ErrorCode, createAppError } from '../types/errors';
 
 /**
  * Interface for upsell modal content
@@ -104,26 +105,20 @@ export function usePremium() {
   const trackFeatureUsage = useCallback((featureKey: string, limit: number = 2): boolean => {
     if (isPremium) return true; // Premium users have unlimited usage
 
-    try {
-      const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-      const storageKey = `zensai-feature-${featureKey}-${today}`;
-      
-      // Get current usage
-      const currentUsage = parseInt(localStorage.getItem(storageKey) || '0', 10);
-      
-      // Check if limit reached
-      if (currentUsage >= limit) {
-        return false;
-      }
-      
-      // Increment usage
-      localStorage.setItem(storageKey, (currentUsage + 1).toString());
-      return true;
-    } catch (err) {
-      console.error('Error tracking feature usage:', err);
-      // If localStorage fails, default to allowing usage
-      return true;
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    const storageKey = `zensai-feature-${featureKey}-${today}`;
+    
+    // Get current usage
+    const currentUsage = parseInt(safeStorage.getItem(storageKey, '0'), 10);
+    
+    // Check if limit reached
+    if (currentUsage >= limit) {
+      return false;
     }
+    
+    // Increment usage
+    safeStorage.setItem(storageKey, (currentUsage + 1).toString());
+    return true;
   }, [isPremium]);
 
   return {

@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { usePremium } from './usePremium';
 import { MoodLevel } from '../types';
+import { ErrorCode, createAppError, getUserFriendlyErrorMessage } from '../types/errors';
 
 /**
  * Interface for mood analysis response
@@ -47,7 +48,11 @@ export function useMoodAnalyzer() {
    */
   const analyzeMood = async (journalEntry: string): Promise<MoodLevel | null> => {
     if (!journalEntry.trim()) {
-      setError('Journal entry is required for mood analysis');
+      const error = createAppError(
+        ErrorCode.VALIDATION_ERROR,
+        'Journal entry is required for mood analysis'
+      );
+      setError(getUserFriendlyErrorMessage(error));
       return null;
     }
 
@@ -56,7 +61,12 @@ export function useMoodAnalyzer() {
 
     // Check if free user has reached daily limit
     if (!isPremium && !trackFeatureUsage('mood-analyzer')) {
-      setError('Daily limit reached. Upgrade to Premium for unlimited mood analysis.');
+      const error = createAppError(
+        ErrorCode.PREMIUM_DAILY_LIMIT,
+        'Daily limit reached. Upgrade to Premium for unlimited mood analysis.',
+        { feature: 'mood-analyzer' }
+      );
+      setError(getUserFriendlyErrorMessage(error));
       setIsAnalyzing(false);
       return null;
     }
@@ -70,7 +80,12 @@ export function useMoodAnalyzer() {
       });
 
       if (functionError) {
-        console.error('Edge function error:', functionError);
+        console.error('Mood analysis edge function error:', functionError);
+        const error = createAppError(
+          ErrorCode.AI_SERVICE_UNAVAILABLE,
+          'Failed to analyze mood',
+          { functionError }
+        );
         setError('Failed to analyze mood');
         return null;
       }
@@ -78,7 +93,12 @@ export function useMoodAnalyzer() {
       const response: MoodAnalysisResponse = data;
       
       if (!response.success) {
-        setError(response.error || 'Failed to analyze mood');
+        const error = createAppError(
+          ErrorCode.AI_GENERATION_FAILED,
+          response.error || 'Failed to analyze mood',
+          { response }
+        );
+        setError(getUserFriendlyErrorMessage(error));
         // Return neutral as fallback
         return 3;
       }
@@ -88,7 +108,12 @@ export function useMoodAnalyzer() {
       return moodLevel;
     } catch (err) {
       console.error('Error calling mood analyzer:', err);
-      setError('An unexpected error occurred during mood analysis');
+      const error = createAppError(
+        ErrorCode.UNKNOWN_ERROR,
+        'An unexpected error occurred during mood analysis',
+        undefined, err
+      );
+      setError(getUserFriendlyErrorMessage(error));
       return null;
     } finally {
       setIsAnalyzing(false);
