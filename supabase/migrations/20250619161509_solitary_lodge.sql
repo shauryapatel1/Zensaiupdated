@@ -1,42 +1,40 @@
 /*
-  # Fix Badge Duplicates and Premium Badge Management
-
-  1. Clean up duplicate badges
-    - Remove duplicate 'Premium Member' badges (keep only one)
-    - Remove duplicate 'Premium Plus' badges (keep only one)
-    - Remove 'Early Supporter' badge completely
-
-  2. Add unique constraint
-    - Create unique constraint on (name, category) to prevent future duplicates
-
-  3. Update badge insertion
-    - Use ON CONFLICT DO NOTHING for premium badges
-    - Ensure only one instance of each premium badge exists
-
-  4. Subscription management
-    - Add subscription fields to profiles table
-    - Create triggers for subscription badge management
-    - Update badge checking function for subscription badges
+  # Fix Badge Duplicates and Add Subscription Support
+  
+  1. New Features
+     - Add subscription fields to profiles table
+     - Add subscription status constraints and indexes
+     - Add premium badge types
+  
+  2. Bug Fixes
+     - Fix duplicate badge handling using row_number() instead of min()
+     - Add unique constraint on badge name and category
+     - Update badge check function for subscription badges
 */
 
--- First, clean up any duplicate premium badges
--- Delete duplicate 'Premium Member' badges, keeping only the first one
+-- First, clean up any duplicate premium badges using row_number() instead of min()
 DELETE FROM public.badges 
-WHERE id NOT IN (
-  SELECT MIN(id) 
-  FROM public.badges 
-  WHERE name = 'Premium Member' AND category = 'special'
-  GROUP BY name, category
-) AND name = 'Premium Member' AND category = 'special';
+WHERE id IN (
+  SELECT id FROM (
+    SELECT id, 
+           ROW_NUMBER() OVER (PARTITION BY name, category ORDER BY id) as row_num
+    FROM public.badges 
+    WHERE name = 'Premium Member' AND category = 'special'
+  ) t
+  WHERE row_num > 1
+);
 
--- Delete duplicate 'Premium Plus' badges, keeping only the first one
+-- Delete duplicate 'Premium Plus' badges using row_number()
 DELETE FROM public.badges 
-WHERE id NOT IN (
-  SELECT MIN(id) 
-  FROM public.badges 
-  WHERE name = 'Premium Plus' AND category = 'special'
-  GROUP BY name, category
-) AND name = 'Premium Plus' AND category = 'special';
+WHERE id IN (
+  SELECT id FROM (
+    SELECT id, 
+           ROW_NUMBER() OVER (PARTITION BY name, category ORDER BY id) as row_num
+    FROM public.badges 
+    WHERE name = 'Premium Plus' AND category = 'special'
+  ) t
+  WHERE row_num > 1
+);
 
 -- Remove 'Early Supporter' badge completely
 DELETE FROM public.badges WHERE name = 'Early Supporter';
