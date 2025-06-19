@@ -11,6 +11,7 @@
 + */
  export default function Footer() {
    const currentYear = new Date().getFullYear();
+ }
  
 @@ .. @@
      <footer className="bg-zen-cream/60 backdrop-blur py-4">
