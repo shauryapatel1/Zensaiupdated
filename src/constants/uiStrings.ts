@@ -209,6 +209,7 @@ export const SETTINGS = {
 
 // Badges
 export const BADGES = {
+  TITLE: 'Badge Collection',
   PROGRESS: {
     TITLE: 'Badge Progress',
     EARNED: '{count} earned',

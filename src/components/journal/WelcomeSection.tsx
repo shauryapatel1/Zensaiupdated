@@ -71,6 +71,7 @@ const WelcomeSection = React.memo(function WelcomeSection({
     >
       <h2 className="text-3xl font-display font-bold text-zen-sage-800 dark:text-gray-200 mb-2">
         {getGreeting()}
+       <span className="sr-only">Welcome to your journal</span>
       </h2>
       <p className="text-zen-sage-600 dark:text-gray-400 mb-4">{getCurrentDate()}</p>
       

@@ -46,7 +46,7 @@ const ProfileOverviewCard = React.memo(function ProfileOverviewCard({
   return (
     <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/20 dark:border-gray-600/20 text-center">
       <div className="flex justify-center mb-4">
-        <LottieAvatar mood={4} size="lg" variant="greeting" />
+        <LottieAvatar mood={4} size="lg" variant="greeting" aria-label="Your Zeno fox companion, looking happy" />
       </div>
       
       <h2 className="text-xl font-display font-bold text-zen-sage-800 dark:text-gray-200 mb-2">

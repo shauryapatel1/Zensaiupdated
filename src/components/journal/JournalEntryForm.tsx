@@ -196,6 +196,7 @@ const JournalEntryForm = React.memo(function JournalEntryForm({
           disabled={isSubmitting}
           isPremiumUser={isPremiumUser}
           onUpsellTrigger={onUpsellTrigger}
+          aria-label="Upload a photo to attach to your journal entry"
         />
       </div>
 

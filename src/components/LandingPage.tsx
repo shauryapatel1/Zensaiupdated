@@ -218,7 +218,7 @@ export default function LandingPage() {
             transition={{ duration: 0.8, delay: 0.4 }}
           >
             <div className="w-full max-w-lg h-96 rounded-3xl overflow-hidden shadow-2xl border border-white/20 bg-gradient-to-br from-zen-mint-100 to-zen-lavender-100 flex items-center justify-center">
-              <LottieAvatar mood={4} size="lg" variant="greeting" />
+              <LottieAvatar mood={4} size="lg" variant="greeting" aria-label="Zeno the fox, looking happy and welcoming new users" />
             </div>
           </motion.div>
         </div>

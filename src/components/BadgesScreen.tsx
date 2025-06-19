@@ -71,7 +71,7 @@ export default function BadgesScreen({ onBack }: BadgesScreenProps) {
               <Logo size="sm" className="mr-1" />
               <h1 className="font-display font-bold text-zen-sage-800 dark:text-gray-200 flex items-center">
                 <Trophy className="w-5 h-5 mr-2 text-zen-peach-500" />
-                Badge Collection
+                {BADGES.TITLE || "Badge Collection"}
               </h1>
               <p className="text-xs text-zen-sage-600 dark:text-gray-400">
                 {stats.earned} of {stats.total} badges earned

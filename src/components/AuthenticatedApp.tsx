@@ -505,7 +505,15 @@ export default function AuthenticatedApp() {
     return moodMap[moodString] || 3;
   }, []);
 
-  // Show journal loading state
+  const formatDate = React.useCallback((dateString: string): string => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  }, []);
+
   // Show journal loading state
   if (journalLoading) {
     return (
