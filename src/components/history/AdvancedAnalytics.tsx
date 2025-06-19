@@ -1,7 +1,23 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, Crown } from 'lucide-react';
+import { HISTORY } from '../../constants/uiStrings';
 
+/**
+ * AdvancedAnalytics - Component that displays advanced analytics features or upsell for premium
+ * 
+ * @component
+ * @param {boolean} isPremium - Whether the user has premium subscription
+ * @param {function} onUpgrade - Function to call when user clicks upgrade button
+ * 
+ * @example
+ * return (
+ *   <AdvancedAnalytics
+ *     isPremium={false}
+ *     onUpgrade={handleShowUpsellModal}
+ *   />
+ * )
+ */
 interface AdvancedAnalyticsProps {
   isPremium: boolean;
   onUpgrade: () => void;
@@ -20,8 +36,8 @@ const AdvancedAnalytics = React.memo(function AdvancedAnalytics({
     >
       <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/20 dark:border-gray-600/20">
         <h2 className="text-lg font-display font-bold text-zen-sage-800 dark:text-gray-200 mb-4 flex items-center space-x-2">
-          <Sparkles className="w-5 h-5 text-zen-mint-500" aria-hidden="true" />
-          <span>Advanced Analytics</span>
+          <Sparkles className="w-5 h-5 text-zen-mint-500" aria-hidden="true" /> 
+          <span>{HISTORY.ANALYTICS.TITLE}</span>
           {!isPremium && (
             <span className="text-xs font-normal text-zen-peach-500 bg-zen-peach-100 dark:bg-zen-peach-900/30 px-2 py-1 rounded-full">
               Premium
@@ -33,10 +49,10 @@ const AdvancedAnalytics = React.memo(function AdvancedAnalytics({
           <div className="text-center py-8">
             <Sparkles className="w-12 h-12 text-zen-mint-400 mx-auto mb-4 opacity-70" aria-hidden="true" />
             <h3 className="text-xl font-display font-semibold text-zen-sage-800 dark:text-gray-200 mb-2">
-              Advanced Insights Coming Soon
+              {HISTORY.ANALYTICS.COMING_SOON}
             </h3>
             <p className="text-zen-sage-600 dark:text-gray-400 max-w-md mx-auto">
-              We're working on detailed mood trends, sentiment analysis, and AI-generated summaries of your emotional patterns.
+              {HISTORY.ANALYTICS.COMING_SOON_DESC}
             </p>
           </div>
         ) : (
@@ -47,10 +63,10 @@ const AdvancedAnalytics = React.memo(function AdvancedAnalytics({
               </div>
               <div>
                 <h3 className="text-lg font-display font-bold text-zen-sage-800 dark:text-gray-200 mb-2">
-                  Unlock Advanced Analytics
+                  {HISTORY.ANALYTICS.UNLOCK}
                 </h3>
                 <p className="text-zen-sage-600 dark:text-gray-400 mb-4">
-                  Upgrade to Zensai Premium to access detailed mood trends, sentiment analysis, and AI-generated insights about your emotional patterns.
+                  {HISTORY.ANALYTICS.UNLOCK_DESC}
                 </p>
                 <button
                   onClick={onUpgrade}

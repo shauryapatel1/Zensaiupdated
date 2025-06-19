@@ -2,7 +2,24 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Trophy, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { BADGES } from '../constants/uiStrings';
 
+/**
+ * BadgeWidget - Displays a summary of the user's badge collection
+ * 
+ * @component
+ * @param {Array} badges - Array of badge objects
+ * @param {function} onViewAllBadges - Function to navigate to the full badges screen
+ * @param {string} [className] - Optional CSS class name
+ * 
+ * @example
+ * return (
+ *   <BadgeWidget
+ *     badges={userBadges}
+ *     onViewAllBadges={() => setCurrentView('badges')}
+ *   />
+ * )
+ */
 interface BadgeWidgetProps {
   badges: Array<{
     id: string;
@@ -65,7 +82,7 @@ const BadgeWidget = React.memo(function BadgeWidget({ badges, onViewAllBadges, c
         <div className="flex items-center space-x-2">
           <Trophy className="w-5 h-5 text-zen-peach-500" aria-hidden="true" />
           <h3 className="font-display font-bold text-zen-sage-800 dark:text-gray-200">
-            Your Badges
+            {BADGES.PROGRESS.TITLE}
           </h3>
         </div>
         <button
@@ -81,8 +98,8 @@ const BadgeWidget = React.memo(function BadgeWidget({ badges, onViewAllBadges, c
       {/* Progress Bar */}
       <div className="mb-4">
         <div className="flex justify-between text-sm text-zen-sage-600 dark:text-gray-400 mb-2">
-          <span>{earnedBadges.length} earned</span>
-          <span>{completionPercentage}% complete</span>
+          <span>{BADGES.PROGRESS.EARNED.replace('{count}', earnedBadges.length.toString())}</span>
+          <span>{BADGES.PROGRESS.PERCENTAGE.replace('{percent}', completionPercentage.toString())}</span>
         </div>
         <div 
           className="w-full bg-zen-sage-200 dark:bg-gray-600 rounded-full h-2"
@@ -104,8 +121,8 @@ const BadgeWidget = React.memo(function BadgeWidget({ badges, onViewAllBadges, c
       {/* Recent Badges */}
       {recentBadges.length > 0 && (
         <div className="mb-4">
-          <h4 className="text-sm font-medium text-zen-sage-700 dark:text-gray-300 mb-2" id="recently-earned-heading">
-            Recently Earned
+          <h4 className="text-sm font-medium text-zen-sage-700 dark:text-gray-300 mb-2" id="recently-earned-heading"> 
+            {BADGES.SECTIONS.RECENT}
           </h4>
           <div className="space-y-2" aria-labelledby="recently-earned-heading">
             {recentBadges.map((badge, index) => (
@@ -145,8 +162,8 @@ const BadgeWidget = React.memo(function BadgeWidget({ badges, onViewAllBadges, c
       {/* Upcoming Badges */}
       {upcomingBadges.length > 0 && (
         <div>
-          <h4 className="text-sm font-medium text-zen-sage-700 dark:text-gray-300 mb-2" id="almost-there-heading">
-            Almost There
+          <h4 className="text-sm font-medium text-zen-sage-700 dark:text-gray-300 mb-2" id="almost-there-heading"> 
+            {BADGES.SECTIONS.ALMOST_THERE}
           </h4>
           <div className="space-y-2" aria-labelledby="almost-there-heading">
             {upcomingBadges.map((badge, index) => (
@@ -193,8 +210,8 @@ const BadgeWidget = React.memo(function BadgeWidget({ badges, onViewAllBadges, c
       {/* No Badges Message */}
       {earnedBadges.length === 0 && upcomingBadges.length === 0 && (
         <div className="text-center py-4">
-          <p className="text-zen-sage-600 dark:text-gray-400" aria-live="polite">
-            Start journaling to earn your first badge!
+          <p className="text-zen-sage-600 dark:text-gray-400" aria-live="polite"> 
+            {BADGES.PROGRESS.MORE_TO_GO.replace('{count}', totalBadges.toString())}
           </p>
         </div>
       )}

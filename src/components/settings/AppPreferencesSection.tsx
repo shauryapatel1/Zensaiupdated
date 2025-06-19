@@ -1,6 +1,26 @@
 import React from 'react';
 import { Moon, Sun, Bell } from 'lucide-react';
+import { SETTINGS } from '../../constants/uiStrings';
 
+/**
+ * AppPreferencesSection - Component for app preferences like dark mode and notifications
+ * 
+ * @component
+ * @param {boolean} isDarkMode - Whether dark mode is enabled
+ * @param {boolean} notifications - Whether notifications are enabled
+ * @param {function} onToggleDarkMode - Function to toggle dark mode
+ * @param {function} onToggleNotifications - Function to toggle notifications
+ * 
+ * @example
+ * return (
+ *   <AppPreferencesSection
+ *     isDarkMode={isDarkMode}
+ *     notifications={notifications}
+ *     onToggleDarkMode={handleToggleDarkMode}
+ *     onToggleNotifications={handleToggleNotifications}
+ *   />
+ * )
+ */
 interface AppPreferencesSectionProps {
   isDarkMode: boolean;
   notifications: boolean;
@@ -17,7 +37,7 @@ const AppPreferencesSection = React.memo(function AppPreferencesSection({
   return (
     <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/20 dark:border-gray-600/20">
       <h3 className="text-lg font-display font-bold text-zen-sage-800 dark:text-gray-200 mb-4">
-        App Preferences
+        {SETTINGS.PREFERENCES.TITLE}
       </h3>
       
       <div className="space-y-4">
@@ -29,9 +49,9 @@ const AppPreferencesSection = React.memo(function AppPreferencesSection({
               <Sun className="w-5 h-5 text-zen-sage-600 dark:text-gray-300" aria-hidden="true" />
             }
             <div>
-              <h4 className="font-medium text-zen-sage-800 dark:text-gray-200">Dark Mode</h4>
+              <h4 className="font-medium text-zen-sage-800 dark:text-gray-200">{SETTINGS.PREFERENCES.DARK_MODE.LABEL}</h4>
               <p className="text-sm text-zen-sage-600 dark:text-gray-400">
-                {isDarkMode ? 'Dark theme enabled' : 'Light theme enabled'}
+                {isDarkMode ? SETTINGS.PREFERENCES.DARK_MODE.ENABLED : SETTINGS.PREFERENCES.DARK_MODE.DISABLED}
               </p>
             </div>
           </div>
@@ -58,9 +78,9 @@ const AppPreferencesSection = React.memo(function AppPreferencesSection({
           <div className="flex items-center space-x-3">
             <Bell className="w-5 h-5 text-zen-sage-600 dark:text-gray-300" aria-hidden="true" />
             <div>
-              <h4 className="font-medium text-zen-sage-800 dark:text-gray-200">Notifications</h4>
+              <h4 className="font-medium text-zen-sage-800 dark:text-gray-200">{SETTINGS.PREFERENCES.NOTIFICATIONS.LABEL}</h4>
               <p className="text-sm text-zen-sage-600 dark:text-gray-400">
-                Gentle reminders for journaling
+                {SETTINGS.PREFERENCES.NOTIFICATIONS.DESCRIPTION}
               </p>
             </div>
           </div>

@@ -1,9 +1,32 @@
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, AlertCircle, Info, X, Trophy } from 'lucide-react';
+import { JOURNAL } from '../constants/uiStrings';
 
 export type ToastType = 'success' | 'error' | 'info' | 'badge';
 
+/**
+ * ToastNotification - Displays temporary notifications
+ * 
+ * @component
+ * @param {boolean} isVisible - Whether the notification is visible
+ * @param {string} message - Notification message
+ * @param {ToastType} type - Type of notification (success, error, info, badge)
+ * @param {function} onClose - Function to close the notification
+ * @param {number} [duration=5000] - Duration in milliseconds before auto-closing
+ * @param {Object} [badge] - Badge information for badge notifications
+ * 
+ * @example
+ * return (
+ *   <ToastNotification
+ *     isVisible={showToast}
+ *     message="Journal entry saved successfully!"
+ *     type="success"
+ *     onClose={() => setShowToast(false)}
+ *     duration={3000}
+ *   />
+ * )
+ */
 interface ToastNotificationProps {
   isVisible: boolean;
   message: string;

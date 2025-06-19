@@ -3,6 +3,10 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { usePremium } from './usePremium';
 
+/**
+ * Interface for prompt generation response
+ * @interface PromptResponse
+ */
 interface PromptResponse {
   success: boolean;
   prompt: string;
@@ -11,6 +15,21 @@ interface PromptResponse {
   timestamp: string;
 }
 
+/**
+ * Custom hook for generating journal prompts
+ * 
+ * @returns {Object} Prompt generation methods and state
+ * 
+ * @example
+ * const { 
+ *   generatePrompt, 
+ *   isLoading, 
+ *   error 
+ * } = usePromptGenerator();
+ * 
+ * // Generate a prompt
+ * const prompt = await generatePrompt({ mood: 'happy' });
+ */
 export function usePromptGenerator() {
   const { user } = useAuth();
   const { isPremium, trackFeatureUsage } = usePremium();
@@ -18,7 +37,13 @@ export function usePromptGenerator() {
   const [error, setError] = useState<string | null>(null);
   const [dailyUsageCount, setDailyUsageCount] = useState(0);
 
-  // Fallback prompts for when the AI service is unavailable
+  /**
+   * Get a fallback prompt when AI service is unavailable
+   * 
+   * @param {string} [mood] - Optional mood to tailor the prompt
+   * @param {string[]} [previousPrompts=[]] - Previously used prompts to avoid repetition
+   * @returns {string} A suitable prompt
+   */
   const getFallbackPrompt = (mood?: string, previousPrompts: string[] = []): string => {
     const moodBasedPrompts: Record<string, string[]> = {
       'very sad': [
@@ -85,6 +110,14 @@ export function usePromptGenerator() {
     return promptsToUse[dayOfYear % promptsToUse.length];
   };
 
+  /**
+   * Generate a journal prompt
+   * 
+   * @param {Object} [options] - Generation options
+   * @param {string} [options.mood] - User's current mood
+   * @param {string[]} [options.previousPrompts] - Previously used prompts to avoid repetition
+   * @returns {Promise<string|null>} Generated prompt or null on failure
+   */
   const generatePrompt = async (options?: {
     mood?: string;
     previousPrompts?: string[];

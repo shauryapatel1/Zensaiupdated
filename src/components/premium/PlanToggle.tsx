@@ -1,6 +1,17 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
+/**
+ * PlanToggle - A toggle component for switching between monthly and yearly subscription plans
+ * 
+ * @component
+ * @param {('monthly'|'yearly')} selectedPlan - Currently selected plan
+ * @param {function} onSelectPlan - Callback function when plan is changed
+ * 
+ * @example
+ * const [plan, setPlan] = useState('yearly');
+ * return <PlanToggle selectedPlan={plan} onSelectPlan={setPlan} />
+ */
 interface PlanToggleProps {
   selectedPlan: 'monthly' | 'yearly';
   onSelectPlan: (plan: 'monthly' | 'yearly') => void;

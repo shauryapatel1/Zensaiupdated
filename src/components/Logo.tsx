@@ -1,6 +1,18 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { APP_NAME } from '../constants/uiStrings';
 
+/**
+ * Logo - Displays the application logo
+ * 
+ * @component
+ * @param {'sm'|'md'|'lg'} [size='md'] - Size of the logo
+ * @param {string} [className] - Optional CSS class name
+ * @param {boolean} [animate=true] - Whether to animate the logo
+ * 
+ * @example
+ * return <Logo size="md" animate={true} />
+ */
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg';
   className?: string;
@@ -22,9 +34,9 @@ const Logo = React.memo(function Logo({ size = 'md', className = '', animate = t
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
-        whileHover={{ scale: 1.05 }}
+        whileHover={{ scale: 1.05 }} 
         role="img"
-        aria-label="Zensai logo"
+        aria-label={`${APP_NAME} logo`}
       >
         <img 
           src="/Zensai Logo copy.png" 
@@ -39,7 +51,7 @@ const Logo = React.memo(function Logo({ size = 'md', className = '', animate = t
     <div 
       className={`flex-shrink-0 rounded-full overflow-hidden bg-white/20 backdrop-blur-sm shadow-lg ${logoContainerSizeClasses[size]} ${className}`}
       role="img"
-      aria-label="Zensai logo"
+      aria-label={`${APP_NAME} logo`}
     >
       <img 
         src="/Zensai Logo copy.png" 

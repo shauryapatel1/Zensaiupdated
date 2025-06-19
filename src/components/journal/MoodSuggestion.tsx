@@ -3,7 +3,27 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
 import { MoodLevel } from '../../types';
 import { moods } from '../../data/moods';
+import { JOURNAL } from '../../constants/uiStrings';
 
+/**
+ * MoodSuggestion - Displays AI-detected mood suggestion
+ * 
+ * @component
+ * @param {boolean} showMoodSuggestion - Whether to show the suggestion
+ * @param {MoodLevel|null} aiDetectedMood - AI-detected mood level
+ * @param {function} onAcceptAiMood - Function to accept AI mood suggestion
+ * @param {function} onDismissMoodSuggestion - Function to dismiss AI mood suggestion
+ * 
+ * @example
+ * return (
+ *   <MoodSuggestion
+ *     showMoodSuggestion={true}
+ *     aiDetectedMood={4}
+ *     onAcceptAiMood={handleAcceptAiMood}
+ *     onDismissMoodSuggestion={handleDismissMoodSuggestion}
+ *   />
+ * )
+ */
 interface MoodSuggestionProps {
   showMoodSuggestion: boolean;
   aiDetectedMood: MoodLevel | null;

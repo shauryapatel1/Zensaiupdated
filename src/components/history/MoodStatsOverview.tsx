@@ -2,8 +2,20 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Heart } from 'lucide-react';
 import { MoodLevel } from '../../types';
+import { HISTORY } from '../../constants/uiStrings';
 import { moods } from '../../data/moods';
 
+/**
+ * MoodStatsOverview - Displays statistics about the user's mood distribution
+ * 
+ * @component
+ * @param {Array} moodStats - Array of mood statistics with count and percentage
+ * 
+ * @example
+ * return (
+ *   <MoodStatsOverview moodStats={moodStats} />
+ * )
+ */
 interface MoodStatsOverviewProps {
   moodStats: Array<{
     level: MoodLevel;
@@ -23,7 +35,7 @@ const MoodStatsOverview = React.memo(function MoodStatsOverview({ moodStats }: M
       <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/20 dark:border-gray-600/20">
         <h2 className="text-lg font-display font-bold text-zen-sage-800 dark:text-gray-200 mb-4 flex items-center space-x-2">
           <Heart className="w-5 h-5 text-zen-peach-500" aria-hidden="true" />
-          <span>Mood Distribution</span>
+          <span>{HISTORY.MOOD_DISTRIBUTION}</span>
         </h2>
         
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">

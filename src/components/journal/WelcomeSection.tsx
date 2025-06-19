@@ -2,7 +2,31 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { User } from '../../contexts/AuthContext';
 import JournalStats from './JournalStats';
+import { JOURNAL } from '../../constants/uiStrings';
 
+/**
+ * WelcomeSection - Displays welcome message, date, and journal statistics
+ * 
+ * @component
+ * @param {User|null} user - Current user object
+ * @param {number} streak - Current journaling streak
+ * @param {number} bestStreak - Best journaling streak
+ * @param {number} totalEntries - Total number of journal entries
+ * @param {boolean} alreadyJournaledToday - Whether user has journaled today
+ * @param {string} [contextualMessage] - Optional contextual message based on recent activity
+ * 
+ * @example
+ * return (
+ *   <WelcomeSection
+ *     user={currentUser}
+ *     streak={5}
+ *     bestStreak={10}
+ *     totalEntries={42}
+ *     alreadyJournaledToday={true}
+ *     contextualMessage="Welcome back! I've been thinking about our last conversation."
+ *   />
+ * )
+ */
 interface WelcomeSectionProps {
   user: User | null;
   streak: number;

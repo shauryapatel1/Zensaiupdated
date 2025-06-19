@@ -4,6 +4,10 @@ import { useAuth } from '../contexts/AuthContext';
 import { usePremium } from './usePremium';
 import { MoodLevel } from '../types';
 
+/**
+ * Interface for affirmation generation response
+ * @interface AffirmationResponse
+ */
 interface AffirmationResponse {
   success: boolean;
   affirmation: string;
@@ -12,6 +16,21 @@ interface AffirmationResponse {
   timestamp: string;
 }
 
+/**
+ * Custom hook for generating personalized affirmations
+ * 
+ * @returns {Object} Affirmation generation methods and state
+ * 
+ * @example
+ * const { 
+ *   generateAffirmation, 
+ *   isGenerating, 
+ *   error 
+ * } = useAffirmationGenerator();
+ * 
+ * // Generate an affirmation
+ * const affirmation = await generateAffirmation("I'm feeling proud of my progress", 4);
+ */
 export function useAffirmationGenerator() {
   const { user } = useAuth();
   const { isPremium, trackFeatureUsage } = usePremium();
@@ -19,6 +38,13 @@ export function useAffirmationGenerator() {
   const [error, setError] = useState<string | null>(null);
   const [dailyUsageCount, setDailyUsageCount] = useState(0);
 
+  /**
+   * Generate a personalized affirmation based on journal content and mood
+   * 
+   * @param {string} journalEntry - Journal entry text
+   * @param {MoodLevel} mood - User's mood level
+   * @returns {Promise<string|null>} Generated affirmation or null on failure
+   */
   const generateAffirmation = async (
     journalEntry: string, 
     mood: MoodLevel
@@ -82,7 +108,12 @@ export function useAffirmationGenerator() {
   };
 }
 
-// Helper function to convert mood level to descriptive string
+/**
+ * Helper function to convert mood level to descriptive string
+ * 
+ * @param {MoodLevel} mood - Numeric mood level (1-5)
+ * @returns {string} String representation of mood
+ */
 function getMoodString(mood: MoodLevel): string {
   switch (mood) {
     case 1:

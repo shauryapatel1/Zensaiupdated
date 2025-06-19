@@ -1,6 +1,23 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
+/**
+ * HistoryPagination - Pagination component for journal history
+ * 
+ * @component
+ * @param {number} currentPage - Current page number
+ * @param {number} totalPages - Total number of pages
+ * @param {function} onPageChange - Function to handle page changes
+ * 
+ * @example
+ * return (
+ *   <HistoryPagination
+ *     currentPage={2}
+ *     totalPages={5}
+ *     onPageChange={setCurrentPage}
+ *   />
+ * )
+ */
 interface HistoryPaginationProps {
   currentPage: number;
   totalPages: number;

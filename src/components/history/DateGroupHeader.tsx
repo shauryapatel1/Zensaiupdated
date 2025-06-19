@@ -2,7 +2,25 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { MoodLevel } from '../../types';
 import { moods } from '../../data/moods';
+import { JOURNAL } from '../../constants/uiStrings';
 
+/**
+ * DateGroupHeader - Displays a header for a group of journal entries from the same date
+ * 
+ * @component
+ * @param {string} date - Date string for the group
+ * @param {Array} entries - Array of entries for this date
+ * @param {number} index - Index of this date group
+ * 
+ * @example
+ * return (
+ *   <DateGroupHeader
+ *     date="Mon Jun 15 2023"
+ *     entries={dayEntries}
+ *     index={0}
+ *   />
+ * )
+ */
 interface DateGroupHeaderProps {
   date: string;
   entries: Array<{

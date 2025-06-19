@@ -4,6 +4,10 @@ import { useAuth } from '../contexts/AuthContext';
 import { usePremium } from './usePremium';
 import { MoodLevel } from '../types';
 
+/**
+ * Interface for mood quote generation response
+ * @interface MoodQuoteResponse
+ */
 interface MoodQuoteResponse {
   success: boolean;
   quote: string;
@@ -13,6 +17,21 @@ interface MoodQuoteResponse {
   timestamp: string;
 }
 
+/**
+ * Custom hook for generating mood-appropriate quotes
+ * 
+ * @returns {Object} Quote generation methods and state
+ * 
+ * @example
+ * const { 
+ *   generateMoodQuote, 
+ *   isGenerating, 
+ *   error 
+ * } = useMoodQuoteGenerator();
+ * 
+ * // Generate a quote for a specific mood
+ * const quote = await generateMoodQuote(4, "I'm feeling optimistic today");
+ */
 export function useMoodQuoteGenerator() {
   const { user } = useAuth();
   const { isPremium, trackFeatureUsage } = usePremium();
@@ -20,6 +39,14 @@ export function useMoodQuoteGenerator() {
   const [error, setError] = useState<string | null>(null);
   const [dailyUsageCount, setDailyUsageCount] = useState(0);
 
+  /**
+   * Generate a quote appropriate for the user's mood
+   * 
+   * @param {MoodLevel} mood - User's mood level
+   * @param {string} [journalEntry] - Optional journal entry for context
+   * @param {string[]} [previousQuotes] - Previously shown quotes to avoid repetition
+   * @returns {Promise<{quote: string, attribution?: string}|null>} Generated quote or null on failure
+   */
   const generateMoodQuote = async (
     mood: MoodLevel,
     journalEntry?: string,
@@ -86,7 +113,12 @@ export function useMoodQuoteGenerator() {
   };
 }
 
-// Helper function to convert mood level to descriptive string
+/**
+ * Helper function to convert mood level to descriptive string
+ * 
+ * @param {MoodLevel} mood - Numeric mood level (1-5)
+ * @returns {string} String representation of mood
+ */
 function getMoodString(mood: MoodLevel): string {
   switch (mood) {
     case 1:

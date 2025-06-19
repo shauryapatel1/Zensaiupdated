@@ -2,7 +2,35 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Lightbulb, RefreshCw } from 'lucide-react';
 import VoiceButton from '../VoiceButton';
+import { JOURNAL } from '../../constants/uiStrings';
 
+/**
+ * PromptSection - Displays daily journaling prompts with voice playback option
+ * 
+ * @component
+ * @param {string} dailyPrompt - Prompt text to display
+ * @param {boolean} isLoadingPrompt - Whether a new prompt is being loaded
+ * @param {function} onGenerateNewPrompt - Function to generate a new prompt
+ * @param {boolean} isGeneratingSpeech - Whether speech is being generated
+ * @param {boolean} isSpeechPlaying - Whether speech is currently playing
+ * @param {function} onPlaySpeech - Function to play prompt as speech
+ * @param {function} onStopSpeech - Function to stop speech playback
+ * @param {boolean} [isPremiumUser=true] - Whether user has premium access
+ * @param {function} [onUpsellTrigger] - Function to trigger premium upsell
+ * 
+ * @example
+ * return (
+ *   <PromptSection
+ *     dailyPrompt="What are you grateful for today?"
+ *     isLoadingPrompt={false}
+ *     onGenerateNewPrompt={handleGenerateNewPrompt}
+ *     isGeneratingSpeech={false}
+ *     isSpeechPlaying={false}
+ *     onPlaySpeech={handlePlaySpeech}
+ *     onStopSpeech={handleStopSpeech}
+ *   />
+ * )
+ */
 interface PromptSectionProps {
   dailyPrompt: string;
   isLoadingPrompt: boolean;

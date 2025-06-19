@@ -4,7 +4,27 @@ import { Save } from 'lucide-react';
 import { MoodLevel } from '../../types';
 import MoodSelector from '../MoodSelector';
 import PhotoUpload from '../PhotoUpload';
+import { JOURNAL } from '../../constants/uiStrings';
 
+/**
+ * EntryForm - Form for creating or editing journal entries
+ * 
+ * @component
+ * @param {function} onSubmit - Function to handle form submission
+ * @param {boolean} isSubmitting - Whether the form is currently submitting
+ * @param {boolean} [isPremiumUser=true] - Whether user has premium access
+ * @param {function} [onUpsellTrigger] - Function to trigger premium upsell
+ * 
+ * @example
+ * return (
+ *   <EntryForm
+ *     onSubmit={handleSubmit}
+ *     isSubmitting={isSubmitting}
+ *     isPremiumUser={isPremium}
+ *     onUpsellTrigger={handleShowUpsellModal}
+ *   />
+ * )
+ */
 interface EntryFormProps {
   onSubmit: (content: string, title: string | null, mood: MoodLevel, photo: File | null) => Promise<void>;
   isSubmitting: boolean;

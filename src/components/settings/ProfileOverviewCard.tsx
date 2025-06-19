@@ -3,6 +3,29 @@ import { motion } from 'framer-motion';
 import { Heart, Sparkles, Trophy } from 'lucide-react';
 import LottieAvatar from '../LottieAvatar';
 
+/**
+ * ProfileOverviewCard - Displays user profile information and statistics
+ * 
+ * @component
+ * @param {string} name - User's display name
+ * @param {string} email - User's email address
+ * @param {string} joinedDate - Formatted date when user joined
+ * @param {number} currentStreak - User's current journaling streak
+ * @param {number} bestStreak - User's best journaling streak
+ * @param {number} totalBadgesEarned - Total number of badges earned
+ * 
+ * @example
+ * return (
+ *   <ProfileOverviewCard
+ *     name="John Doe"
+ *     email="john@example.com"
+ *     joinedDate="January 1, 2023"
+ *     currentStreak={5}
+ *     bestStreak={10}
+ *     totalBadgesEarned={8}
+ *   />
+ * )
+ */
 interface ProfileOverviewCardProps {
   name: string;
   email: string;

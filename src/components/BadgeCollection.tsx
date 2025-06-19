@@ -3,8 +3,19 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Filter, ChevronDown, ChevronUp, Trophy, Calendar, Target, Sparkles } from 'lucide-react';
 import BadgeCard from './BadgeCard';
 import BadgeModal from './BadgeModal';
+import { BADGES } from '../constants/uiStrings';
 import BadgeProgress from './BadgeProgress';
 
+/**
+ * BadgeCollection - Displays a collection of badges with filtering and search
+ * 
+ * @component
+ * @param {Array} badges - Array of badge objects
+ * @param {string} [className] - Optional CSS class name
+ * 
+ * @example
+ * return <BadgeCollection badges={userBadges} />
+ */
 interface BadgeCollectionProps {
   badges: Array<{
     id: string;

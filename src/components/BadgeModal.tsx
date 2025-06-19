@@ -1,7 +1,12 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Calendar, Target, Trophy, Sparkles, Star, Lock } from 'lucide-react';
+import { BADGES } from '../constants/uiStrings';
 
+/**
+ * Interface for badge data
+ * @interface Badge
+ */
 interface Badge {
   id: string;
   badge_name: string;
@@ -16,6 +21,23 @@ interface Badge {
   progress_percentage: number;
 }
 
+/**
+ * BadgeModal - Displays detailed information about a badge in a modal dialog
+ * 
+ * @component
+ * @param {Badge|null} badge - Badge data to display
+ * @param {boolean} isOpen - Whether the modal is open
+ * @param {function} onClose - Function to close the modal
+ * 
+ * @example
+ * return (
+ *   <BadgeModal
+ *     badge={selectedBadge}
+ *     isOpen={isModalOpen}
+ *     onClose={() => setIsModalOpen(false)}
+ *   />
+ * )
+ */
 interface BadgeModalProps {
   badge: Badge | null;
   isOpen: boolean;

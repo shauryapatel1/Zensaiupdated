@@ -1,7 +1,23 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Crown } from 'lucide-react';
+import { HISTORY } from '../../constants/uiStrings';
 
+/**
+ * PremiumHistoryLimit - Component that displays a message about history limitations for free users
+ * 
+ * @component
+ * @param {boolean} showHistoryLimitMessage - Whether to show the message
+ * @param {function} onUpgrade - Function to call when user clicks upgrade button
+ * 
+ * @example
+ * return (
+ *   <PremiumHistoryLimit
+ *     showHistoryLimitMessage={true}
+ *     onUpgrade={handleShowUpsellModal}
+ *   />
+ * )
+ */
 interface PremiumHistoryLimitProps {
   showHistoryLimitMessage: boolean;
   onUpgrade: () => void;
@@ -27,10 +43,10 @@ const PremiumHistoryLimit = React.memo(function PremiumHistoryLimit({
           </div>
           <div>
             <h3 className="text-lg font-display font-bold text-zen-sage-800 dark:text-gray-200 mb-2">
-              Unlock Your Full Journal History
+              {HISTORY.HISTORY_LIMIT.TITLE}
             </h3>
             <p className="text-zen-sage-600 dark:text-gray-400 mb-4">
-              Free accounts can only access the last 30 days or 30 entries. Upgrade to Zensai Premium to unlock your complete journal history and insights.
+              {HISTORY.HISTORY_LIMIT.DESCRIPTION}
             </p>
             <button
               onClick={onUpgrade}

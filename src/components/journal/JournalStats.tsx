@@ -1,7 +1,28 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Trophy, Target, CheckCircle } from 'lucide-react';
+import { JOURNAL } from '../../constants/uiStrings';
 
+/**
+ * JournalStats - Displays statistics about the user's journaling habits
+ * 
+ * @component
+ * @param {number} streak - Current journaling streak
+ * @param {number} bestStreak - Best journaling streak
+ * @param {number} totalEntries - Total number of journal entries
+ * @param {boolean} alreadyJournaledToday - Whether user has journaled today
+ * @param {string} [className] - Optional CSS class name
+ * 
+ * @example
+ * return (
+ *   <JournalStats
+ *     streak={5}
+ *     bestStreak={10}
+ *     totalEntries={42}
+ *     alreadyJournaledToday={true}
+ *   />
+ * )
+ */
 interface JournalStatsProps {
   streak: number;
   bestStreak: number;

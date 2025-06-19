@@ -2,6 +2,10 @@ import { useState, useRef, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { usePremium } from './usePremium';
 
+/**
+ * Interface for voice synthesis settings
+ * @interface VoiceSettings
+ */
 interface VoiceSettings {
   stability?: number;
   similarity_boost?: number;
@@ -9,6 +13,10 @@ interface VoiceSettings {
   use_speaker_boost?: boolean;
 }
 
+/**
+ * Interface for speech generation response
+ * @interface SpeechResponse
+ */
 interface SpeechResponse {
   success: boolean;
   audio_url?: string;
@@ -16,6 +24,27 @@ interface SpeechResponse {
   timestamp: string;
 }
 
+/**
+ * Custom hook for text-to-speech functionality
+ * 
+ * @returns {Object} Voice synthesis methods and state
+ * 
+ * @example
+ * const { 
+ *   generateAndPlaySpeech, 
+ *   stopSpeech, 
+ *   isGenerating,
+ *   isPlaying,
+ *   error,
+ *   clearError
+ * } = useVoiceSynthesis();
+ * 
+ * // Generate and play speech
+ * await generateAndPlaySpeech("Hello, this is a test");
+ * 
+ * // Stop playback
+ * stopSpeech();
+ */
 export function useVoiceSynthesis() {
   const { isPremium, trackFeatureUsage } = usePremium();
   const [isGenerating, setIsGenerating] = useState(false);
@@ -23,6 +52,13 @@ export function useVoiceSynthesis() {
   const [error, setError] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  /**
+   * Generate speech from text and play it
+   * 
+   * @param {string} text - Text to convert to speech
+   * @param {VoiceSettings} [voiceSettings] - Optional voice customization settings
+   * @returns {Promise<boolean>} Success status
+   */
   const generateAndPlaySpeech = useCallback(async (
     text: string,
     voiceSettings?: VoiceSettings
@@ -104,6 +140,9 @@ export function useVoiceSynthesis() {
     }
   }, []);
 
+  /**
+   * Stop speech playback
+   */
   const stopSpeech = useCallback(() => {
     if (audioRef.current) {
       audioRef.current.pause();
@@ -112,6 +151,9 @@ export function useVoiceSynthesis() {
     }
   }, []);
 
+  /**
+   * Clear any error messages
+   */
   const clearError = useCallback(() => {
     setError(null);
   }, []);

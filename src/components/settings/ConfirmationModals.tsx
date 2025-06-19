@@ -1,7 +1,25 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle } from 'lucide-react';
+import { SETTINGS } from '../../constants/uiStrings';
 
+/**
+ * LogoutConfirmModal - Confirmation dialog for signing out
+ * 
+ * @component
+ * @param {boolean} isOpen - Whether the modal is visible
+ * @param {function} onClose - Function to call when canceling
+ * @param {function} onConfirm - Function to call when confirming logout
+ * 
+ * @example
+ * return (
+ *   <LogoutConfirmModal
+ *     isOpen={showLogoutConfirm}
+ *     onClose={() => setShowLogoutConfirm(false)}
+ *     onConfirm={handleLogout}
+ *   />
+ * )
+ */
 interface LogoutConfirmModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -35,23 +53,23 @@ export const LogoutConfirmModal = React.memo(function LogoutConfirmModal({
           onClick={(e) => e.stopPropagation()}
         >
           <h3 id="logout-title" className="text-lg font-display font-bold text-zen-sage-800 dark:text-gray-200 mb-4">
-            Sign Out
+            {SETTINGS.MODALS.LOGOUT.TITLE}
           </h3>
           <p className="text-zen-sage-600 dark:text-gray-400 mb-6">
-            Are you sure you want to sign out? You'll need to sign in again to access your journal.
+            {SETTINGS.MODALS.LOGOUT.MESSAGE}
           </p>
           <div className="flex space-x-3">
             <button
               onClick={onClose}
               className="flex-1 px-4 py-3 bg-zen-sage-100 dark:bg-gray-700 text-zen-sage-800 dark:text-gray-200 rounded-2xl hover:bg-zen-sage-200 dark:hover:bg-gray-600 transition-colors"
             >
-              Cancel
+              {SETTINGS.MODALS.LOGOUT.CANCEL}
             </button>
             <button
               onClick={onConfirm}
               className="flex-1 px-4 py-3 bg-zen-peach-400 text-white rounded-2xl hover:bg-zen-peach-500 transition-colors"
             >
-              Sign Out
+              {SETTINGS.MODALS.LOGOUT.CONFIRM}
             </button>
           </div>
         </motion.div>
@@ -60,6 +78,29 @@ export const LogoutConfirmModal = React.memo(function LogoutConfirmModal({
   );
 });
 
+/**
+ * DeleteAccountModal - Confirmation dialog for account deletion
+ * 
+ * @component
+ * @param {boolean} isOpen - Whether the modal is visible
+ * @param {function} onClose - Function to call when canceling
+ * @param {function} onConfirm - Function to call when confirming deletion
+ * @param {string} confirmText - Current text in the confirmation input
+ * @param {function} onConfirmTextChange - Function to update confirmation text
+ * @param {boolean} isConfirmDisabled - Whether the confirm button should be disabled
+ * 
+ * @example
+ * return (
+ *   <DeleteAccountModal
+ *     isOpen={showDeleteConfirm}
+ *     onClose={() => setShowDeleteConfirm(false)}
+ *     onConfirm={handleDeleteAccount}
+ *     confirmText={deleteConfirmText}
+ *     onConfirmTextChange={setDeleteConfirmText}
+ *     isConfirmDisabled={deleteConfirmText !== 'DELETE'}
+ *   />
+ * )
+ */
 interface DeleteAccountModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -99,14 +140,14 @@ export const DeleteAccountModal = React.memo(function DeleteAccountModal({
           onClick={(e) => e.stopPropagation()}
         >
           <h3 id="delete-account-title" className="text-lg font-display font-bold text-red-600 dark:text-red-400 mb-4 flex items-center">
-            <AlertTriangle className="w-5 h-5 mr-2" aria-hidden="true" />
-            Delete Account
+            <AlertTriangle className="w-5 h-5 mr-2" aria-hidden="true" /> 
+            {SETTINGS.MODALS.DELETE.TITLE}
           </h3>
           <p className="text-zen-sage-600 dark:text-gray-400 mb-4">
-            This action cannot be undone. All your journal entries, progress, and data will be permanently deleted.
+            {SETTINGS.MODALS.DELETE.MESSAGE}
           </p>
           <p className="text-zen-sage-600 dark:text-gray-400 mb-6">
-            Type <strong>DELETE</strong> to confirm:
+            {SETTINGS.ACCOUNT_ACTIONS.DELETE_CONFIRMATION}
           </p>
           <input
             type="text"
@@ -121,14 +162,14 @@ export const DeleteAccountModal = React.memo(function DeleteAccountModal({
               onClick={onClose}
               className="flex-1 px-4 py-3 bg-zen-sage-100 dark:bg-gray-700 text-zen-sage-800 dark:text-gray-200 rounded-2xl hover:bg-zen-sage-200 dark:hover:bg-gray-600 transition-colors"
             >
-              Cancel
+              {SETTINGS.MODALS.DELETE.CANCEL}
             </button>
             <button
               onClick={onConfirm}
               disabled={isConfirmDisabled}
               className="flex-1 px-4 py-3 bg-red-500 text-white rounded-2xl hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              Delete Account
+              {SETTINGS.MODALS.DELETE.CONFIRM}
             </button>
           </div>
         </motion.div>

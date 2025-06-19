@@ -4,6 +4,10 @@ import { useAuth } from '../contexts/AuthContext';
 import { useJournalEntries } from './useJournalEntries';
 import { MoodLevel } from '../types';
 
+/**
+ * Interface for journal entry data
+ * @interface JournalEntry
+ */
 interface JournalEntry {
   id: string;
   user_id: string;
@@ -16,6 +20,10 @@ interface JournalEntry {
   updated_at: string;
 }
 
+/**
+ * Interface for user profile data
+ * @interface Profile
+ */
 interface Profile {
   user_id: string;
   name: string;
@@ -31,6 +39,10 @@ interface Profile {
   updated_at: string;
 }
 
+/**
+ * Interface for badge data
+ * @interface Badge
+ */
 interface Badge {
   id: string;
   badge_name: string;
@@ -45,6 +57,20 @@ interface Badge {
   progress_percentage: number;
 }
 
+/**
+ * Custom hook for managing journal-related functionality
+ * 
+ * @returns {Object} Journal methods and state
+ * 
+ * @example
+ * const { 
+ *   entries, 
+ *   profile, 
+ *   badges, 
+ *   addEntry, 
+ *   updateJournalingGoal 
+ * } = useJournal();
+ */
 export function useJournal() {
   const { user, isAuthenticated } = useAuth();
   const { 
@@ -62,17 +88,25 @@ export function useJournal() {
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   const [profileError, setProfileError] = useState<string | null>(null);
 
-  // Calculate premium status directly from profile
+  /**
+   * Calculate premium status directly from profile
+   */
   const isPremium = profile?.subscription_status === 'premium' && 
     (!profile?.subscription_expires_at || new Date(profile.subscription_expires_at) > new Date());
 
-  // Combined loading state
+  /**
+   * Combined loading state from entries and profile
+   */
   const isLoading = entriesLoading || isLoadingProfile;
   
-  // Combined error state
+  /**
+   * Combined error state from entries and profile
+   */
   const error = entriesError || profileError;
 
-  // Load user profile and entries
+  /**
+   * Load user profile and entries when authentication state changes
+   */
   useEffect(() => {
     if (isAuthenticated && user) {
       loadUserData();
@@ -84,6 +118,9 @@ export function useJournal() {
     }
   }, [isAuthenticated, user]);
 
+  /**
+   * Load user profile data from Supabase
+   */
   const loadUserData = async () => {
     if (!user) return;
 
@@ -118,6 +155,9 @@ export function useJournal() {
     }
   };
 
+  /**
+   * Load user badges from Supabase
+   */
   const loadUserBadges = async () => {
     if (!user) return;
 
@@ -136,6 +176,12 @@ export function useJournal() {
     }
   };
 
+  /**
+   * Update the user's weekly journaling goal
+   * 
+   * @param {number} frequency - Number of days per week (1-7)
+   * @returns {Promise<{success: boolean, error?: string}>} Result object
+   */
   const updateJournalingGoal = async (frequency: number): Promise<{ success: boolean; error?: string }> => {
     if (!user || !isAuthenticated) {
       return { success: false, error: 'You must be logged in to update your goal' };
@@ -174,29 +220,62 @@ export function useJournal() {
     }
   };
 
+  /**
+   * Get the user's current journaling streak
+   * 
+   * @returns {number} Current streak in days
+   */
   const getStreak = (): number => {
     return profile?.current_streak || 0;
   };
 
+  /**
+   * Get the user's best journaling streak
+   * 
+   * @returns {number} Best streak in days
+   */
   const getBestStreak = (): number => {
     return profile?.best_streak || 0;
   };
 
+  /**
+   * Get the total number of journal entries
+   * 
+   * @returns {number} Total entries count
+   */
   const getTotalEntries = (): number => {
     return entries.length;
   };
 
+  /**
+   * Get the date of the last journal entry
+   * 
+   * @returns {Date|null} Date object or null if no entries
+   */
   const getLastEntryDate = (): Date | null => {
     if (!profile?.last_entry_date) return null;
     return new Date(profile.last_entry_date);
   };
 
+  /**
+   * Check if the user has already journaled today
+   * 
+   * @returns {boolean} True if an entry exists for today
+   */
   const hasEntryToday = (): boolean => {
     const today = new Date().toISOString().split('T')[0];
     return profile?.last_entry_date === today;
   };
 
-  // Wrap addEntry to handle premium checks and profile updates
+  /**
+   * Add a new journal entry with premium checks and profile updates
+   * 
+   * @param {string} content - Journal entry content
+   * @param {string|null} title - Optional entry title
+   * @param {MoodLevel} mood - Selected mood level
+   * @param {File} [photoFile] - Optional photo attachment
+   * @returns {Promise<{success: boolean, error?: string}>} Result object
+   */
   const handleAddEntry = async (
     content: string,
     title: string | null,
@@ -234,7 +313,12 @@ export function useJournal() {
     return result;
   };
   
-  // Wrap deleteEntry to handle profile updates
+  /**
+   * Delete a journal entry and update profile data
+   * 
+   * @param {string} entryId - ID of the entry to delete
+   * @returns {Promise<{success: boolean, error?: string}>} Result object
+   */
   const handleDeleteEntry = async (entryId: string): Promise<{ success: boolean; error?: string }> => {
     const result = await deleteEntry(entryId);
     
@@ -245,6 +329,14 @@ export function useJournal() {
     }
     
     return result;
+  };
+
+  /**
+   * Refresh all journal data (entries, profile, badges)
+   */
+  const refreshData = () => {
+    loadUserData();
+    loadUserBadges();
   };
 
   return {
@@ -263,9 +355,6 @@ export function useJournal() {
     getTotalEntries,
     getLastEntryDate,
     hasEntryToday,
-    refreshData: () => {
-      loadUserData();
-      loadUserBadges();
-    }
+    refreshData
   };
 }

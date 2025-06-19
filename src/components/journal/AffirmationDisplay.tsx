@@ -4,7 +4,37 @@ import { Sparkles } from 'lucide-react';
 import VoiceButton from '../VoiceButton';
 import LottieAvatar from '../LottieAvatar';
 import { MoodLevel } from '../../types';
+import { JOURNAL } from '../../constants/uiStrings';
 
+/**
+ * AffirmationDisplay - Displays personalized affirmations with voice playback option
+ * 
+ * @component
+ * @param {string|null} affirmation - Affirmation text to display
+ * @param {boolean} showAffirmation - Whether to show the affirmation
+ * @param {string|null} affirmationError - Error message if affirmation generation failed
+ * @param {boolean} isGeneratingSpeech - Whether speech is being generated
+ * @param {boolean} isSpeechPlaying - Whether speech is currently playing
+ * @param {function} onPlaySpeech - Function to play affirmation as speech
+ * @param {function} onStopSpeech - Function to stop speech playback
+ * @param {MoodLevel} [selectedMood=3] - User's selected mood
+ * @param {boolean} [isPremiumUser=true] - Whether user has premium access
+ * @param {function} [onUpsellTrigger] - Function to trigger premium upsell
+ * 
+ * @example
+ * return (
+ *   <AffirmationDisplay
+ *     affirmation="You are doing great today!"
+ *     showAffirmation={true}
+ *     affirmationError={null}
+ *     isGeneratingSpeech={false}
+ *     isSpeechPlaying={false}
+ *     onPlaySpeech={handlePlaySpeech}
+ *     onStopSpeech={handleStopSpeech}
+ *     selectedMood={4}
+ *   />
+ * )
+ */
 interface AffirmationDisplayProps {
   affirmation: string | null;
   showAffirmation: boolean;

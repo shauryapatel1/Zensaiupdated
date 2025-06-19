@@ -1,7 +1,31 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Save } from 'lucide-react';
+import { SETTINGS } from '../../constants/uiStrings';
 
+/**
+ * ProfileSettingsForm - Form for editing user profile information
+ * 
+ * @component
+ * @param {string} displayName - Current display name
+ * @param {string} originalName - Original display name for comparison
+ * @param {number} journalingGoal - Current journaling goal frequency
+ * @param {number} originalGoal - Original journaling goal for comparison
+ * @param {boolean} isSaving - Whether the form is currently saving
+ * @param {function} onSave - Function to call when saving changes
+ * 
+ * @example
+ * return (
+ *   <ProfileSettingsForm
+ *     displayName="John Doe"
+ *     originalName="John Doe"
+ *     journalingGoal={3}
+ *     originalGoal={3}
+ *     isSaving={false}
+ *     onSave={handleSaveProfile}
+ *   />
+ * )
+ */
 interface ProfileSettingsFormProps {
   displayName: string;
   originalName: string;
@@ -40,7 +64,7 @@ const ProfileSettingsForm = React.memo(function ProfileSettingsForm({
   return (
     <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/20 dark:border-gray-600/20">
       <h3 className="text-lg font-display font-bold text-zen-sage-800 dark:text-gray-200 mb-4">
-        Profile Information
+        {SETTINGS.PROFILE.TITLE}
       </h3>
       
       <div className="space-y-4">
@@ -71,7 +95,7 @@ const ProfileSettingsForm = React.memo(function ProfileSettingsForm({
             aria-readonly="true"
           />
           <p className="text-xs text-zen-sage-500 dark:text-gray-400 mt-1">
-            Email cannot be changed. Contact support if needed.
+            {SETTINGS.PROFILE.EMAIL_READONLY}
           </p>
         </div>
         
@@ -100,7 +124,7 @@ const ProfileSettingsForm = React.memo(function ProfileSettingsForm({
             </div>
           </div>
           <p className="text-xs text-zen-sage-500 dark:text-gray-400 mt-2">
-            Set your weekly journaling goal to stay motivated and track your progress.
+            {SETTINGS.PROFILE.GOAL_HELP}
           </p>
         </div>
         

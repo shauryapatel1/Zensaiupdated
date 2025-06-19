@@ -2,6 +2,21 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle } from 'lucide-react';
 
+/**
+ * SuccessMessage - Displays success messages in a consistent format
+ * 
+ * @component
+ * @param {string} message - Success message to display
+ * @param {boolean} show - Whether to show the message
+ * 
+ * @example
+ * return (
+ *   <SuccessMessage
+ *     message="Journal entry saved successfully!"
+ *     show={showSuccess}
+ *   />
+ * )
+ */
 interface SuccessMessageProps {
   message: string;
   show: boolean;

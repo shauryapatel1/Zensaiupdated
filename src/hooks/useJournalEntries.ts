@@ -3,6 +3,10 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { MoodLevel } from '../types';
 
+/**
+ * Interface for journal entry data
+ * @interface JournalEntry
+ */
 interface JournalEntry {
   id: string;
   user_id: string;
@@ -15,17 +19,41 @@ interface JournalEntry {
   updated_at: string;
 }
 
+/**
+ * Interface for add entry result
+ * @interface AddEntryResult
+ */
 interface AddEntryResult {
   success: boolean;
   error?: string;
 }
 
+/**
+ * Custom hook for managing journal entries CRUD operations
+ * 
+ * @returns {Object} Journal entries methods and state
+ * 
+ * @example
+ * const { 
+ *   entries, 
+ *   loadEntries,
+ *   addEntry, 
+ *   updateEntry,
+ *   deleteEntry
+ * } = useJournalEntries();
+ */
 export function useJournalEntries() {
   const { user, isAuthenticated } = useAuth();
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  /**
+   * Load journal entries from Supabase
+   * 
+   * @param {boolean} isPremium - Whether the user has premium access
+   * @returns {Promise<void>}
+   */
   const loadEntries = async (isPremium: boolean) => {
     if (!user) return;
 
@@ -68,6 +96,15 @@ export function useJournalEntries() {
     }
   };
 
+  /**
+   * Add a new journal entry
+   * 
+   * @param {string} content - Journal entry content
+   * @param {string|null} title - Optional entry title
+   * @param {MoodLevel} mood - Selected mood level
+   * @param {File} [photoFile] - Optional photo attachment
+   * @returns {Promise<AddEntryResult>} Result object
+   */
   const addEntry = async (
     content: string, 
     title: string | null,
@@ -154,6 +191,17 @@ export function useJournalEntries() {
     }
   };
 
+  /**
+   * Update an existing journal entry
+   * 
+   * @param {string} entryId - ID of the entry to update
+   * @param {string} content - Updated content
+   * @param {string|null} title - Updated title
+   * @param {MoodLevel} mood - Updated mood
+   * @param {File} [photoFile] - New photo (optional)
+   * @param {boolean} [removePhoto] - Whether to remove existing photo
+   * @returns {Promise<AddEntryResult>} Result object
+   */
   const updateEntry = async (
     entryId: string, 
     content: string, 
@@ -289,6 +337,12 @@ export function useJournalEntries() {
     }
   };
 
+  /**
+   * Delete a journal entry
+   * 
+   * @param {string} entryId - ID of the entry to delete
+   * @returns {Promise<AddEntryResult>} Result object
+   */
   const deleteEntry = async (entryId: string): Promise<AddEntryResult> => {
     if (!user || !isAuthenticated) {
       return { success: false, error: 'You must be logged in to delete entries' };
@@ -348,7 +402,12 @@ export function useJournalEntries() {
   };
 }
 
-// Helper function to convert mood level to descriptive string
+/**
+ * Helper function to convert mood level to descriptive string
+ * 
+ * @param {MoodLevel} mood - Numeric mood level (1-5)
+ * @returns {string} String representation of mood
+ */
 function getMoodString(mood: MoodLevel): string {
   switch (mood) {
     case 1:

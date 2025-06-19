@@ -4,6 +4,10 @@ import { useAuth } from '../contexts/AuthContext';
 import { usePremium } from './usePremium';
 import { MoodLevel } from '../types';
 
+/**
+ * Interface for mood analysis response
+ * @interface MoodAnalysisResponse
+ */
 interface MoodAnalysisResponse {
   success: boolean;
   mood: string;
@@ -13,6 +17,21 @@ interface MoodAnalysisResponse {
   timestamp: string;
 }
 
+/**
+ * Custom hook for analyzing mood from journal text
+ * 
+ * @returns {Object} Mood analysis methods and state
+ * 
+ * @example
+ * const { 
+ *   analyzeMood, 
+ *   isAnalyzing, 
+ *   error 
+ * } = useMoodAnalyzer();
+ * 
+ * // Analyze mood from text
+ * const detectedMood = await analyzeMood("I'm feeling great today!");
+ */
 export function useMoodAnalyzer() {
   const { user } = useAuth();
   const { isPremium, trackFeatureUsage } = usePremium();
@@ -20,6 +39,12 @@ export function useMoodAnalyzer() {
   const [error, setError] = useState<string | null>(null);
   const [dailyUsageCount, setDailyUsageCount] = useState(0);
 
+  /**
+   * Analyze mood from journal text
+   * 
+   * @param {string} journalEntry - Text to analyze
+   * @returns {Promise<MoodLevel|null>} Detected mood level or null on failure
+   */
   const analyzeMood = async (journalEntry: string): Promise<MoodLevel | null> => {
     if (!journalEntry.trim()) {
       setError('Journal entry is required for mood analysis');
@@ -78,7 +103,12 @@ export function useMoodAnalyzer() {
   };
 }
 
-// Helper function to convert mood string to MoodLevel
+/**
+ * Helper function to convert mood string to MoodLevel
+ * 
+ * @param {string} mood - Mood string from API
+ * @returns {MoodLevel} Numeric mood level (1-5)
+ */
 function convertMoodStringToLevel(mood: string): MoodLevel {
   const normalizedMood = mood.toLowerCase().trim();
   

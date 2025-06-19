@@ -1,7 +1,30 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Camera, X, Upload, Image as ImageIcon } from 'lucide-react';
+import { UPSELL } from '../constants/uiStrings';
 
+/**
+ * PhotoUpload - Component for uploading and managing photos
+ * 
+ * @component
+ * @param {boolean} [isPremiumUser=true] - Whether user has premium access
+ * @param {function} [onUpsellTrigger] - Function to trigger premium upsell
+ * @param {function} onPhotoSelect - Function to handle photo selection
+ * @param {string|null} [currentPhoto] - URL of current photo
+ * @param {boolean} [disabled=false] - Whether the component is disabled
+ * @param {string} [className] - Optional CSS class name
+ * 
+ * @example
+ * return (
+ *   <PhotoUpload
+ *     isPremiumUser={isPremium}
+ *     onUpsellTrigger={handleShowUpsellModal}
+ *     onPhotoSelect={setSelectedPhoto}
+ *     currentPhoto={entry.photo_url}
+ *     disabled={isSubmitting}
+ *   />
+ * )
+ */
 interface PhotoUploadProps {
   isPremiumUser?: boolean;
   onUpsellTrigger?: () => void;

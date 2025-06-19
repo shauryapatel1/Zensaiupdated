@@ -2,6 +2,15 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertCircle } from 'lucide-react';
 
+/**
+ * ErrorMessage - Displays error messages in a consistent format
+ * 
+ * @component
+ * @param {string} error - Error message to display
+ * 
+ * @example
+ * return <ErrorMessage error="Failed to save journal entry" />
+ */
 interface ErrorMessageProps {
   error: string;
 }
