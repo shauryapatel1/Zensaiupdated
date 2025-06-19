@@ -40,7 +40,7 @@ const Logo = React.memo(function Logo({ size = 'md', className = '', animate = t
       >
         <img 
           src="/Zensai Logo copy.png" 
-          alt="" 
+          alt={`${APP_NAME} fox logo`}
           className="w-full h-full object-cover object-center"
         />
       </motion.div>
@@ -55,7 +55,7 @@ const Logo = React.memo(function Logo({ size = 'md', className = '', animate = t
     >
       <img 
         src="/Zensai Logo copy.png" 
-        alt="" 
+        alt={`${APP_NAME} fox logo`}
         className="w-full h-full object-cover object-center"
       />
     </div>

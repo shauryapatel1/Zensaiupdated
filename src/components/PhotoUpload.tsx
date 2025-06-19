@@ -175,7 +175,7 @@ const PhotoUpload = React.memo(function PhotoUpload({
             <div className="relative rounded-2xl overflow-hidden shadow-lg border border-zen-sage-200">
               <img
                 src={preview}
-                alt="Journal photo"
+                alt={selectedPhoto?.name ? `Journal photo: ${selectedPhoto.name}` : "Uploaded journal photo"}
                 className="w-full h-48 object-cover"
               />
               

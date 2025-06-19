@@ -245,7 +245,7 @@ const JournalEntryCard = React.memo(function JournalEntryCard({
             <div className="mt-4">
               <img
                 src={entry.photo_url}
-                alt="Journal entry"
+                alt={entry.photo_filename ? `Photo for journal entry: ${entry.photo_filename}` : `Photo attached to journal entry from ${formatTime(entry.created_at)}`}
                 className="rounded-xl max-w-full h-auto shadow-md"
               />
             </div>
