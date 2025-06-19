@@ -5,7 +5,7 @@ import { vi } from 'vitest';
 vi.mock('../lib/supabase', () => ({
   supabase: {
     auth: {
-      getUser: vi.fn(),
+      getUser: vi.fn(() => Promise.resolve({ data: { user: null }, error: null })),
       signInWithPassword: vi.fn(),
       signUp: vi.fn(),
       signOut: vi.fn(),
@@ -111,4 +111,10 @@ const localStorageMock = (() => {
 
 Object.defineProperty(window, 'localStorage', {
   value: localStorageMock
+});
+
+// Mock window.scrollTo
+Object.defineProperty(window, 'scrollTo', {
+  value: vi.fn(),
+  writable: true
 });
