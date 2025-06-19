@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { MoodLevel } from '../types';
+import { ErrorCode, createAppError, getUserFriendlyErrorMessage } from '../types/errors';
 
 /**
  * Interface for journal entry data
@@ -112,11 +113,23 @@ export function useJournalEntries() {
     photoFile?: File
   ): Promise<AddEntryResult> => {
     if (!user || !isAuthenticated) {
-      return { success: false, error: 'You must be logged in to save entries' };
+      return { 
+        success: false, 
+        error: getUserFriendlyErrorMessage(createAppError(
+          ErrorCode.NOT_AUTHENTICATED,
+          'You must be logged in to save entries'
+        ))
+      };
     }
 
-    if (!content.trim()) {
-      return { success: false, error: 'Entry content cannot be empty' };
+    if (!content?.trim()) {
+      return { 
+        success: false, 
+        error: getUserFriendlyErrorMessage(createAppError(
+          ErrorCode.JOURNAL_ENTRY_EMPTY,
+          'Entry content cannot be empty'
+        ))
+      };
     }
 
     try {
@@ -146,7 +159,14 @@ export function useJournalEntries() {
 
           if (uploadError) {
             console.error('Photo upload error:', uploadError);
-            return { success: false, error: 'Failed to upload photo. Please try again.' };
+            return { 
+              success: false, 
+              error: getUserFriendlyErrorMessage(createAppError(
+                ErrorCode.MEDIA_UPLOAD_FAILED,
+                'Failed to upload photo. Please try again.',
+                { uploadError }
+              ))
+            };
           }
 
           // Get public URL
@@ -158,7 +178,15 @@ export function useJournalEntries() {
           photoFilename = photoFile.name;
         } catch (photoError) {
           console.error('Photo processing error:', photoError);
-          return { success: false, error: 'Failed to process photo. Please try again.' };
+          return { 
+            success: false, 
+            error: getUserFriendlyErrorMessage(createAppError(
+              ErrorCode.MEDIA_UPLOAD_FAILED,
+              'Failed to process photo. Please try again.',
+              undefined,
+              photoError
+            ))
+          };
         }
       }
 
@@ -178,7 +206,14 @@ export function useJournalEntries() {
 
       if (entryError) {
         console.error('Error saving entry:', entryError);
-        return { success: false, error: 'Failed to save your journal entry. Please try again.' };
+        return { 
+          success: false, 
+          error: getUserFriendlyErrorMessage(createAppError(
+            ErrorCode.JOURNAL_SAVE_FAILED,
+            'Failed to save your journal entry. Please try again.',
+            { entryError }
+          ))
+        };
       }
 
       // Update local state
@@ -187,7 +222,15 @@ export function useJournalEntries() {
       return { success: true };
     } catch (err) {
       console.error('Error adding entry:', err);
-      return { success: false, error: 'An unexpected error occurred. Please try again.' };
+      return { 
+        success: false, 
+        error: getUserFriendlyErrorMessage(createAppError(
+          ErrorCode.UNKNOWN_ERROR,
+          'An unexpected error occurred. Please try again.',
+          undefined,
+          err
+        ))
+      };
     }
   };
 
@@ -211,11 +254,23 @@ export function useJournalEntries() {
     removePhoto?: boolean
   ): Promise<AddEntryResult> => {
     if (!user || !isAuthenticated) {
-      return { success: false, error: 'You must be logged in to update entries' };
+      return { 
+        success: false, 
+        error: getUserFriendlyErrorMessage(createAppError(
+          ErrorCode.NOT_AUTHENTICATED,
+          'You must be logged in to update entries'
+        ))
+      };
     }
 
-    if (!content.trim()) {
-      return { success: false, error: 'Entry content cannot be empty' };
+    if (!content?.trim()) {
+      return { 
+        success: false, 
+        error: getUserFriendlyErrorMessage(createAppError(
+          ErrorCode.JOURNAL_ENTRY_EMPTY,
+          'Entry content cannot be empty'
+        ))
+      };
     }
 
     try {
@@ -271,9 +326,17 @@ export function useJournalEntries() {
 
           if (uploadError) {
             console.error('Photo upload error:', uploadError);
-            return { success: false, error: 'Failed to upload photo. Please try again.' };
+            return { 
+              success: false, 
+              error: getUserFriendlyErrorMessage(createAppError(
+                ErrorCode.MEDIA_UPLOAD_FAILED,
+                'Failed to upload photo. Please try again.',
+                { uploadError }
+              ))
+            };
           }
 
+          // Get public URL
           const { data: urlData } = supabase.storage
             .from('journal-photos')
             .getPublicUrl(fileName);
@@ -282,7 +345,14 @@ export function useJournalEntries() {
           photoFilename = photoFile.name;
         } catch (photoError) {
           console.error('Photo processing error:', photoError);
-          return { success: false, error: 'Failed to process photo. Please try again.' };
+          return { 
+            success: false, 
+            error: getUserFriendlyErrorMessage(createAppError(
+              ErrorCode.MEDIA_UPLOAD_FAILED,
+              'Failed to process photo. Please try again.',
+              undefined, photoError
+            ))
+          };
         }
       } else {
         // Keep existing photo
@@ -313,7 +383,14 @@ export function useJournalEntries() {
 
       if (updateError) {
         console.error('Error updating entry:', updateError);
-        return { success: false, error: 'Failed to update your journal entry. Please try again.' };
+        return { 
+          success: false, 
+          error: getUserFriendlyErrorMessage(createAppError(
+            ErrorCode.JOURNAL_UPDATE_FAILED,
+            'Failed to update your journal entry. Please try again.',
+            { updateError }
+          ))
+        };
       }
 
       // Update local state
@@ -333,7 +410,14 @@ export function useJournalEntries() {
       return { success: true };
     } catch (err) {
       console.error('Error updating entry:', err);
-      return { success: false, error: 'An unexpected error occurred. Please try again.' };
+      return { 
+        success: false, 
+        error: getUserFriendlyErrorMessage(createAppError(
+          ErrorCode.UNKNOWN_ERROR,
+          'An unexpected error occurred. Please try again.',
+          undefined, err
+        ))
+      };
     }
   };
 
@@ -345,7 +429,13 @@ export function useJournalEntries() {
    */
   const deleteEntry = async (entryId: string): Promise<AddEntryResult> => {
     if (!user || !isAuthenticated) {
-      return { success: false, error: 'You must be logged in to delete entries' };
+      return { 
+        success: false, 
+        error: getUserFriendlyErrorMessage(createAppError(
+          ErrorCode.NOT_AUTHENTICATED,
+          'You must be logged in to delete entries'
+        ))
+      };
     }
 
     try {
@@ -378,7 +468,14 @@ export function useJournalEntries() {
 
       if (deleteError) {
         console.error('Error deleting entry:', deleteError);
-        return { success: false, error: 'Failed to delete your journal entry. Please try again.' };
+        return { 
+          success: false, 
+          error: getUserFriendlyErrorMessage(createAppError(
+            ErrorCode.JOURNAL_DELETE_FAILED,
+            'Failed to delete your journal entry. Please try again.',
+            { deleteError }
+          ))
+        };
       }
 
       // Update local state
@@ -387,7 +484,14 @@ export function useJournalEntries() {
       return { success: true };
     } catch (err) {
       console.error('Error deleting entry:', err);
-      return { success: false, error: 'An unexpected error occurred. Please try again.' };
+      return { 
+        success: false, 
+        error: getUserFriendlyErrorMessage(createAppError(
+          ErrorCode.UNKNOWN_ERROR,
+          'An unexpected error occurred. Please try again.',
+          undefined, err
+        ))
+      };
     }
   };
 

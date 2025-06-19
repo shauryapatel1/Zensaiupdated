@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
+import { ErrorCode, createAppError, getUserFriendlyErrorMessage } from '../types/errors';
 
 interface User {
   id: string;
@@ -110,16 +111,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       if (error) {
         let errorMessage = 'Login failed. Please try again.';
+        let errorCode = ErrorCode.UNKNOWN_ERROR;
         
         if (error.message.includes('Invalid login credentials')) {
           errorMessage = 'Invalid email or password. Please check your credentials.';
+          errorCode = ErrorCode.AUTH_INVALID_CREDENTIALS;
         } else if (error.message.includes('Email not confirmed')) {
           errorMessage = 'Please check your email and confirm your account before signing in.';
+          errorCode = ErrorCode.AUTH_USER_NOT_FOUND;
         } else if (error.message.includes('Too many requests')) {
           errorMessage = 'Too many login attempts. Please wait a moment and try again.';
+          errorCode = ErrorCode.AUTH_TOO_MANY_REQUESTS;
         }
         
-        return { success: false, error: errorMessage };
+        const appError = createAppError(errorCode, errorMessage, { originalMessage: error.message });
+        return { success: false, error: getUserFriendlyErrorMessage(appError) };
       }
 
       if (data.user) {
@@ -130,7 +136,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { success: false, error: 'Login failed. Please try again.' };
     } catch (error) {
       console.error('Login error:', error);
-      return { success: false, error: 'An unexpected error occurred. Please try again.' };
+      return { success: false, error: getUserFriendlyErrorMessage(createAppError(ErrorCode.UNKNOWN_ERROR, 'An unexpected error occurred. Please try again.', undefined, error)) };
     }
   };
 
@@ -148,19 +154,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       if (error) {
         let errorMessage = 'Sign up failed. Please try again.';
+        let errorCode = ErrorCode.UNKNOWN_ERROR;
         
         if (error.message.includes('User already registered')) {
           errorMessage = 'An account with this email already exists. Please sign in instead.';
+          errorCode = ErrorCode.AUTH_EMAIL_IN_USE;
         } else if (error.message.includes('Password should be at least')) {
           errorMessage = 'Password must be at least 6 characters long.';
+          errorCode = ErrorCode.AUTH_WEAK_PASSWORD;
         } else if (error.message.includes('Invalid email')) {
           errorMessage = 'Please enter a valid email address.';
+          errorCode = ErrorCode.AUTH_INVALID_EMAIL;
         }
         
-        return { success: false, error: errorMessage };
+        const appError = createAppError(errorCode, errorMessage, { originalMessage: error.message });
+        return { success: false, error: getUserFriendlyErrorMessage(appError) };
       }
 
       if (data.user) {
+        // Check if email confirmation is required
         // Check if email confirmation is required
         if (!data.session) {
           return { 
@@ -176,7 +188,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { success: false, error: 'Sign up failed. Please try again.' };
     } catch (error) {
       console.error('Signup error:', error);
-      return { success: false, error: 'An unexpected error occurred. Please try again.' };
+      return { success: false, error: getUserFriendlyErrorMessage(createAppError(ErrorCode.UNKNOWN_ERROR, 'An unexpected error occurred. Please try again.', undefined, error)) };
     }
   };
 

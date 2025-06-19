@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Camera, X, Upload, Image as ImageIcon } from 'lucide-react';
 import { UPSELL } from '../constants/uiStrings';
+import { ErrorCode, createAppError, getUserFriendlyErrorMessage } from '../types/errors';
 
 /**
  * PhotoUpload - Component for uploading and managing photos
@@ -51,7 +52,7 @@ const PhotoUpload = React.memo(function PhotoUpload({
   const handleFileSelect = (file: File | null) => {
     if (!isPremiumUser) {
       if (onUpsellTrigger) onUpsellTrigger();
-      return;
+      return; 
       
     }
 
@@ -62,14 +63,25 @@ const PhotoUpload = React.memo(function PhotoUpload({
     }
 
     // Validate file type
-    if (!file.type.startsWith('image/')) {
-      alert('Please select an image file');
+    const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!validImageTypes.includes(file.type)) {
+      const error = createAppError(
+        ErrorCode.MEDIA_INVALID_TYPE,
+        'Please select a valid image file (JPEG, PNG, GIF, or WebP)',
+        { fileType: file.type }
+      );
+      alert(getUserFriendlyErrorMessage(error));
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert('Image must be smaller than 5MB');
+      const error = createAppError(
+        ErrorCode.MEDIA_TOO_LARGE,
+        'Image must be smaller than 5MB',
+        { fileSize: file.size, maxSize: 5 * 1024 * 1024 }
+      );
+      alert(getUserFriendlyErrorMessage(error));
       return;
     }
 
