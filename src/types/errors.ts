@@ -120,17 +120,17 @@ export const safeStorage = {
    * Get item from localStorage with error handling
    * 
    * @param {string} key - Storage key
-   * @param {any} defaultValue - Default value if key doesn't exist or error occurs
-   * @returns {any} Stored value or default value
+   * @param {string|number|boolean|object|null} defaultValue - Default value if key doesn't exist or error occurs
+   * @returns {string|number|boolean|object|null} Stored value or default value
    */
-  getItem(key: string, defaultValue: any = null): any {
+  getItem<T extends string|number|boolean|object|null>(key: string, defaultValue: T = null as T): T {
     try {
       const item = localStorage.getItem(key);
       if (item === null) return defaultValue;
       try {
-        return JSON.parse(item);
+        return JSON.parse(item) as T;
       } catch {
-        return item;
+        return item as unknown as T;
       }
     } catch (err) {
       console.error('Error reading from localStorage:', err);
@@ -142,10 +142,10 @@ export const safeStorage = {
    * Set item in localStorage with error handling
    * 
    * @param {string} key - Storage key
-   * @param {any} value - Value to store
+   * @param {string|number|boolean|object} value - Value to store
    * @returns {boolean} Success status
    */
-  setItem(key: string, value: any): boolean {
+  setItem(key: string, value: string|number|boolean|object): boolean {
     try {
       const valueToStore = typeof value === 'object' ? JSON.stringify(value) : value;
       localStorage.setItem(key, valueToStore);

@@ -361,7 +361,14 @@ export function useJournalEntries() {
       }
 
       // Prepare update data
-      const updateData: any = {
+      const updateData: {
+        content: string;
+        title: string | null;
+        mood: string;
+        updated_at: string;
+        photo_url?: string | null;
+        photo_filename?: string | null;
+      } = {
         content: content.trim(),
         title: title?.trim() || null,
         mood: moodString,
