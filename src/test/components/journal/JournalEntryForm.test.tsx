@@ -50,7 +50,7 @@ describe('JournalEntryForm', () => {
     expect(screen.getByTestId('photo-upload')).toBeInTheDocument();
     
     // Submit button should be disabled initially
-    const submitButton = screen.getByRole('button', { name: /save entry/i });
+    const submitButton = screen.getByLabelText('Save journal entry');
     expect(submitButton).toBeDisabled();
   });
   
@@ -82,7 +82,7 @@ describe('JournalEntryForm', () => {
     
     // Submit button should now be enabled
     await waitFor(() => {
-      const submitButton = screen.getByRole('button', { name: /save entry/i });
+      const submitButton = screen.getByLabelText('Save journal entry');
       expect(submitButton).not.toBeDisabled();
     });
   });
@@ -121,7 +121,7 @@ describe('JournalEntryForm', () => {
     fireEvent.click(screen.getByText('Upload Photo'));
     
     // Submit the form
-    const submitButton = screen.getByRole('button', { name: /save entry/i });
+    const submitButton = screen.getByLabelText('Save journal entry');
     fireEvent.click(submitButton);
     
     // Check that onSubmit was called with the correct data
@@ -175,7 +175,7 @@ describe('JournalEntryForm', () => {
     
     // Check that form is in loading state
     expect(screen.getByText(/saving your thoughts/i)).toBeInTheDocument();
-    
+
     // Form elements should be disabled
     expect(screen.getByLabelText(/entry title/i)).toBeDisabled();
     expect(screen.getByLabelText(/your thoughts/i)).toBeDisabled();
